@@ -6,6 +6,7 @@ import {
 } from "@/server/uiPasswordGate";
 
 const ONE_WEEK_SECONDS = 60 * 60 * 24 * 7;
+const SEE_OTHER = 303;
 
 const createUnlockUrl = (request: Request, params: { next: string; error?: string }) => {
   const unlockUrl = new URL("/unlock", request.url);
@@ -19,7 +20,7 @@ const createUnlockUrl = (request: Request, params: { next: string; error?: strin
 export async function POST(request: Request) {
   const rootUrl = new URL("/", request.url);
   if (!shouldProtectUi(process.env)) {
-    return NextResponse.redirect(rootUrl);
+    return NextResponse.redirect(rootUrl, SEE_OTHER);
   }
 
   const password = process.env.PASSWORD;
@@ -35,10 +36,11 @@ export async function POST(request: Request) {
   if (typeof formPassword !== "string" || formPassword !== password) {
     return NextResponse.redirect(
       createUnlockUrl(request, { next: nextPath, error: "1" }),
+      SEE_OTHER,
     );
   }
 
-  const response = NextResponse.redirect(new URL(nextPath, request.url));
+  const response = NextResponse.redirect(new URL(nextPath, request.url), SEE_OTHER);
   response.cookies.set({
     name: UI_AUTH_COOKIE_NAME,
     value: password,
@@ -50,4 +52,3 @@ export async function POST(request: Request) {
   });
   return response;
 }
-

@@ -1,12 +1,14 @@
+import Link from "next/link";
 import { CandidateActions } from "./CandidateActions";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { DataSection } from "@/components/page/data-section";
 import { PageScaffold } from "@/components/page/page-scaffold";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDateTime, formatYen } from "@/lib/format";
-import { listRecentCandidates } from "@/server/queries/dashboard";
+import { listRecentCandidatesWithContext } from "@/server/queries/candidates";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +22,7 @@ const stateBadgeVariant: Record<string, "default" | "secondary" | "outline" | "d
 
 export default async function CandidatesPage() {
   try {
-    const rows = await listRecentCandidates(50);
+    const rows = await listRecentCandidatesWithContext(50);
 
     return (
       <PageScaffold title="Candidates" description="レビュー候補の最新 50 件を確認します。">
@@ -40,7 +42,9 @@ export default async function CandidatesPage() {
                   <TableHead className="text-right">Price</TableHead>
                   <TableHead>State</TableHead>
                   <TableHead>Updated At</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Product</TableHead>
+                  <TableHead>Detail</TableHead>
+                  <TableHead>Review</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -55,6 +59,18 @@ export default async function CandidatesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>{formatDateTime(row.updatedAt)}</TableCell>
+                    <TableCell>
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={row.mercariLink.href} target="_blank" rel="noreferrer">
+                          {row.mercariLink.type === "item" ? "商品ページ" : "検索"}
+                        </a>
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/candidates/${row.id}`}>詳細</Link>
+                      </Button>
+                    </TableCell>
                     <TableCell>
                       <CandidateActions candidateId={row.id} />
                     </TableCell>

@@ -21,7 +21,7 @@ export default async function PriceSnapshotsPage() {
           toolbar={<Badge variant="secondary">件数: {rows.length}</Badge>}
         >
           {rows.length === 0 ? (
-            <EmptyState description="スナップショットはまだ作成されていません。" />
+            <EmptyState description="スナップショットが0件です。`/targets` の「相場更新」を実行するか、定期ジョブの実行状態を確認してください。" />
           ) : (
             <Table>
               <TableHeader>

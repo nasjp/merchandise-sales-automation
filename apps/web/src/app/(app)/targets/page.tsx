@@ -1,3 +1,4 @@
+import { TargetRefreshAction } from "./TargetRefreshAction";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { DataSection } from "@/components/page/data-section";
@@ -21,7 +22,7 @@ export default async function TargetsPage() {
           toolbar={<Badge variant="secondary">件数: {rows.length}</Badge>}
         >
           {rows.length === 0 ? (
-            <EmptyState description="有効なターゲットはありません。" />
+            <EmptyState description="有効なターゲットが0件です。seed未投入の可能性があります（READMEの `pnpm db:seed` を確認）。" />
           ) : (
             <Table>
               <TableHeader>
@@ -31,6 +32,7 @@ export default async function TargetsPage() {
                   <TableHead>Title Keyword</TableHead>
                   <TableHead>Model Keyword</TableHead>
                   <TableHead>Updated At</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -41,6 +43,9 @@ export default async function TargetsPage() {
                     <TableCell>{row.titleKeyword}</TableCell>
                     <TableCell>{row.modelKeyword ?? "-"}</TableCell>
                     <TableCell>{formatDateTime(row.updatedAt)}</TableCell>
+                    <TableCell>
+                      <TargetRefreshAction targetId={row.id} />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

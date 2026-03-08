@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { isAuthorizedByPassword, shouldProtectUi } from "./uiPasswordGate";
+import {
+  hasValidPasswordCookie,
+  normalizeNextPath,
+  shouldProtectUi,
+} from "./uiPasswordGate";
 
 describe("uiPasswordGate", () => {
   describe("shouldProtectUi", () => {
@@ -27,66 +31,54 @@ describe("uiPasswordGate", () => {
     });
   });
 
-  describe("isAuthorizedByPassword", () => {
-    test("Basic 認証で password が一致すれば true", () => {
-      const token = Buffer.from("user:secret").toString("base64");
-
+  describe("hasValidPasswordCookie", () => {
+    test("cookie と password が一致すれば true", () => {
       expect(
-        isAuthorizedByPassword({
-          authorizationHeader: `Basic ${token}`,
+        hasValidPasswordCookie({
+          cookiePassword: "secret",
           password: "secret",
         }),
       ).toBe(true);
     });
 
-    test("ヘッダーが無いと false", () => {
+    test("cookie が空なら false", () => {
       expect(
-        isAuthorizedByPassword({
-          authorizationHeader: null,
+        hasValidPasswordCookie({
+          cookiePassword: null,
           password: "secret",
         }),
       ).toBe(false);
     });
 
-    test("scheme が Basic でないと false", () => {
+    test("cookie が不一致なら false", () => {
       expect(
-        isAuthorizedByPassword({
-          authorizationHeader: "Bearer abc",
-          password: "secret",
-        }),
-      ).toBe(false);
-    });
-
-    test("base64 が壊れていると false", () => {
-      expect(
-        isAuthorizedByPassword({
-          authorizationHeader: "Basic ***",
-          password: "secret",
-        }),
-      ).toBe(false);
-    });
-
-    test("コロン区切りが無いと false", () => {
-      const token = Buffer.from("usersecret").toString("base64");
-
-      expect(
-        isAuthorizedByPassword({
-          authorizationHeader: `Basic ${token}`,
-          password: "secret",
-        }),
-      ).toBe(false);
-    });
-
-    test("password が不一致なら false", () => {
-      const token = Buffer.from("user:wrong").toString("base64");
-
-      expect(
-        isAuthorizedByPassword({
-          authorizationHeader: `Basic ${token}`,
+        hasValidPasswordCookie({
+          cookiePassword: "wrong",
           password: "secret",
         }),
       ).toBe(false);
     });
   });
-});
 
+  describe("normalizeNextPath", () => {
+    test("安全な相対パスはそのまま通す", () => {
+      expect(normalizeNextPath("/targets?status=open")).toBe("/targets?status=open");
+    });
+
+    test("空値は / にフォールバック", () => {
+      expect(normalizeNextPath(null)).toBe("/");
+      expect(normalizeNextPath("")).toBe("/");
+    });
+
+    test("絶対URLや不正パスは / にフォールバック", () => {
+      expect(normalizeNextPath("https://example.com")).toBe("/");
+      expect(normalizeNextPath("//example.com")).toBe("/");
+      expect(normalizeNextPath("targets")).toBe("/");
+    });
+
+    test("/unlock への戻り先は / にフォールバック", () => {
+      expect(normalizeNextPath("/unlock")).toBe("/");
+      expect(normalizeNextPath("/unlock?next=/targets")).toBe("/");
+    });
+  });
+});

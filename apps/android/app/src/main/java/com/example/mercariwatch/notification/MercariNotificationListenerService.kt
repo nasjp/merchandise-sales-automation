@@ -50,10 +50,35 @@ class MercariNotificationListenerService : NotificationListenerService() {
   }
 
   private fun Notification.extractBody(): String {
-    val text = extras?.getCharSequence(Notification.EXTRA_TEXT)
-      ?: extras?.getCharSequence(Notification.EXTRA_BIG_TEXT)
+    val parts = linkedSetOf<String>()
 
-    return text?.toString()?.trim().orEmpty()
+    val text = extras?.getCharSequence(Notification.EXTRA_TEXT)
+      ?.toString()
+      ?.trim()
+      .orEmpty()
+    if (text.isNotBlank()) {
+      parts.add(text)
+    }
+
+    val bigText = extras?.getCharSequence(Notification.EXTRA_BIG_TEXT)
+      ?.toString()
+      ?.trim()
+      .orEmpty()
+    if (bigText.isNotBlank()) {
+      parts.add(bigText)
+    }
+
+    val textLines = extras
+      ?.getCharSequenceArray(Notification.EXTRA_TEXT_LINES)
+      ?.mapNotNull { line ->
+        line?.toString()?.trim()?.takeIf { it.isNotBlank() }
+      }
+      .orEmpty()
+    for (line in textLines) {
+      parts.add(line)
+    }
+
+    return parts.joinToString("\n")
   }
 
   companion object {

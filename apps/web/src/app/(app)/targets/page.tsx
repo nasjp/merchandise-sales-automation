@@ -15,14 +15,14 @@ export default async function TargetsPage() {
     const rows = await listActiveTargets();
 
     return (
-      <PageScaffold title="Targets" description="現在有効な監視ターゲットを確認します。">
+      <PageScaffold title="Targets" description="監視対象と最新の相場情報を確認できます。">
         <DataSection
           title="Active Targets"
           subtitle="有効ターゲット"
           toolbar={<Badge variant="secondary">件数: {rows.length}</Badge>}
         >
           {rows.length === 0 ? (
-            <EmptyState description="有効なターゲットが0件です。seed未投入の可能性があります（READMEの `pnpm db:seed` を確認）。" />
+            <EmptyState description="監視対象がまだ登録されていません。登録後にここへ表示されます。" />
           ) : (
             <Table>
               <TableHeader>
@@ -72,7 +72,7 @@ export default async function TargetsPage() {
     );
   } catch (error) {
     return (
-      <PageScaffold title="Targets" description="現在有効な監視ターゲットを確認します。">
+      <PageScaffold title="Targets" description="監視対象と最新の相場情報を確認できます。">
         <ErrorState message={error instanceof Error ? error.message : "unknown error"} />
       </PageScaffold>
     );

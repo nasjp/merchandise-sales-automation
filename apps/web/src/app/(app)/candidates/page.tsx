@@ -36,7 +36,10 @@ export default async function CandidatesPage({ searchParams }: CandidatesPagePro
     });
 
     return (
-      <PageScaffold title="Candidates" description="既定では未処理候補のみ表示します。">
+      <PageScaffold
+        title="Candidates"
+        description="対応待ちの候補を優先して表示しています。必要に応じて全件表示へ切り替えできます。"
+      >
         <DataSection
           title="Candidates"
           subtitle="最新 50 件"

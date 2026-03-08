@@ -65,10 +65,10 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
                 <span className="text-muted-foreground">更新時刻:</span> {formatDateTime(candidate.updatedAt)}
               </p>
               <p>
-                <span className="text-muted-foreground">score:</span> {candidate.score}
+                <span className="text-muted-foreground">スコア:</span> {candidate.score}
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-muted-foreground">review state:</span>
+                <span className="text-muted-foreground">レビュー状態:</span>
                 <Badge variant={stateBadgeVariant[candidate.reviewState] ?? "secondary"}>
                   {candidate.reviewState}
                 </Badge>

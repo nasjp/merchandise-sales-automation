@@ -1,6 +1,0 @@
-project_id = "merchandise-sales-automation"
-
-[db]
-port = 54322
-shadow_port = 54320
-major_version = 15

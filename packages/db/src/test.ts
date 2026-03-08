@@ -46,7 +46,7 @@ const truncateSqlByKey = new Map<string, Promise<string | null>>();
 function resolveMigrationsFolder() {
   const defaultMigrationsFolder = resolve(
     __dirname,
-    "../../../supabase/migrations",
+    "../../../database/migrations",
   );
 
   return process.env.DATABASE_MIGRATIONS_PATH

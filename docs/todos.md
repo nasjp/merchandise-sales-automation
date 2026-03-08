@@ -7,7 +7,7 @@
 
 ## 1. モノレポ土台を作る（P0）
 - [x] ルートに `package.json` / `pnpm-workspace.yaml` / `turbo.json` を作成する
-- [x] ディレクトリを作る: `apps/web`, `apps/jobs`, `apps/android`, `packages/*`, `supabase/*`, `scripts/*`
+- [x] ディレクトリを作る: `apps/web`, `apps/jobs`, `apps/android`, `packages/*`, `database/*`, `scripts/*`
 - [x] `packages/eslint-config`, `packages/typescript-config` を追加する
 - [x] ルート scripts を定義する（`build` / `lint` / `typecheck` / `test` / `dev`）
 - [x] CI ワークフロー雛形を追加する（最低: lint, typecheck, test）
@@ -43,7 +43,7 @@
 - [x] `types.ts` に postgres/pglite + transaction を受けられる共通 `DB` 型を定義する
 - [x] schema を作る（`raw_events`, `targets`, `price_snapshots`, `candidates`, `ai_runs`, `task_audit`）
 - [x] repository 層を作る（rawEvents/targets/snapshots/candidates/aiRuns）
-- [x] `drizzle.config.ts` の migration 出力先を `supabase/migrations` に向ける
+- [x] `drizzle.config.ts` の migration 出力先を `database/migrations` に向ける
 - [x] migration パス上書き（`DATABASE_MIGRATIONS_PATH`）を test helper で扱えるようにする
 
 完了条件:
@@ -108,15 +108,15 @@
 - [x] Android 側に SKU 判定/価格判定ロジックが存在しない
 
 ## 8. DB と migration 運用を固める（P0）
-- [x] `supabase/config.toml` を整備する
-- [x] `supabase/seed.sql` に最小 seed（target と role）を用意する
+- [x] Docker Compose の DB ローカル環境（Postgres + MinIO）を整備する
+- [x] `database/seed.sql` に最小 seed（target と role）を用意する
 - [x] RLS/extension/trigger/view 用の hand-written migration 運用を決める
 - [x] 内部テーブル（例: `raw_events`, `ai_runs`）の公開境界を設計する
 - [x] migration 実行手順（local/staging/prod）をドキュメント化する
 - [x] test 実行時の migration 読み込みルール（既定パスと `DATABASE_MIGRATIONS_PATH`）を決める
 
 完了条件:
-- [x] ローカル Supabase を起動し、schema + seed が再現できる
+- [x] ローカル Docker Postgres を起動し、schema + seed が再現できる
 
 ## 9. End-to-End データフローを完成させる（P0）
 - [x] Android 通知受信 → web ingest 保存 → Trigger 実行の結線

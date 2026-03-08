@@ -15,6 +15,9 @@
 
 ```bash
 pnpm install
+pnpm infra:up
+pnpm db:migrate
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55444/postgres" pnpm db:seed
 pnpm lint
 pnpm typecheck
 pnpm test
@@ -30,7 +33,8 @@ pnpm --filter @merchandise/db test
 - test helper: `db({ migrations, cache })` (`drizzle-orm/pglite` + `@electric-sql/pglite`)
 - 共通型: `src/types.ts`
 
-migration は `supabase/migrations` を正本として扱います。
+migration は `database/migrations` を正本として扱います。
+Supabase は Postgres のホスティング先としてのみ扱い、`supabase-js` / `supabase` CLI は使いません。
 
 運用ルールは [docs/db-operations.md](/Users/nasjp/ghq/github.com/nasjp/merchandise-sales-automation/docs/db-operations.md) を参照してください。
 

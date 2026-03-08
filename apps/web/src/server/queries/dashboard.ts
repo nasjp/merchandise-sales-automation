@@ -13,7 +13,14 @@ export const listRecentCandidates = async (limit = 20) => {
 
 export const listActiveTargets = async () => {
   const db = getDb();
-  return await repositoryLocator.targets.findActive(db);
+  const targets = await repositoryLocator.targets.findActive(db);
+
+  return await Promise.all(
+    targets.map(async (target) => ({
+      ...target,
+      latestSnapshot: await repositoryLocator.snapshots.findLatestByTargetId(db, target.id),
+    })),
+  );
 };
 
 export const listRecentSnapshots = async (limit = 20) => {

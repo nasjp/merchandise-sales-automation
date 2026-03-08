@@ -20,16 +20,37 @@ const stateBadgeVariant: Record<string, "default" | "secondary" | "outline" | "d
   excluded: "secondary",
 };
 
-export default async function CandidatesPage() {
+type CandidatesPageProps = {
+  searchParams: Promise<{
+    scope?: string;
+  }>;
+};
+
+export default async function CandidatesPage({ searchParams }: CandidatesPageProps) {
   try {
-    const rows = await listRecentCandidatesWithContext(50);
+    const params = await searchParams;
+    const scope = params.scope === "all" ? "all" : "open";
+    const rows = await listRecentCandidatesWithContext({
+      limit: 50,
+      scope,
+    });
 
     return (
-      <PageScaffold title="Candidates" description="レビュー候補の最新 50 件を確認します。">
+      <PageScaffold title="Candidates" description="既定では未処理候補のみ表示します。">
         <DataSection
           title="Candidates"
           subtitle="最新 50 件"
-          toolbar={<Badge variant="secondary">件数: {rows.length}</Badge>}
+          toolbar={
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">件数: {rows.length}</Badge>
+              <Button size="sm" variant={scope === "open" ? "secondary" : "outline"} asChild>
+                <Link href="/candidates">未処理のみ</Link>
+              </Button>
+              <Button size="sm" variant={scope === "all" ? "secondary" : "outline"} asChild>
+                <Link href="/candidates?scope=all">全件</Link>
+              </Button>
+            </div>
+          }
         >
           {rows.length === 0 ? (
             <EmptyState description="候補データはまだありません。" />
@@ -42,9 +63,9 @@ export default async function CandidatesPage() {
                   <TableHead className="text-right">Price</TableHead>
                   <TableHead>State</TableHead>
                   <TableHead>Updated At</TableHead>
-                  <TableHead>Product</TableHead>
+                  <TableHead className="w-[22rem]">URL</TableHead>
                   <TableHead>Detail</TableHead>
-                  <TableHead>Review</TableHead>
+                  <TableHead className="w-[15rem]">Review</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -60,11 +81,18 @@ export default async function CandidatesPage() {
                     </TableCell>
                     <TableCell>{formatDateTime(row.updatedAt)}</TableCell>
                     <TableCell>
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={row.mercariLink.href} target="_blank" rel="noreferrer">
-                          {row.mercariLink.type === "item" ? "商品ページ" : "検索"}
+                      {row.listingUrl ? (
+                        <a
+                          href={row.listingUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="block max-w-[22rem] truncate text-xs underline underline-offset-4"
+                        >
+                          {row.listingUrl}
                         </a>
-                      </Button>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">URL未抽出</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Button variant="outline" size="sm" asChild>
@@ -84,7 +112,7 @@ export default async function CandidatesPage() {
     );
   } catch (error) {
     return (
-      <PageScaffold title="Candidates" description="レビュー候補の最新 50 件を確認します。">
+      <PageScaffold title="Candidates" description="候補一覧を表示します。">
         <ErrorState message={error instanceof Error ? error.message : "unknown error"} />
       </PageScaffold>
     );

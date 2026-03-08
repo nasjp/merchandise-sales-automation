@@ -48,7 +48,7 @@ export const appNavItems: AppNavItem[] = [
   {
     href: "/settings",
     label: "Settings",
-    description: "運用設定と接続情報",
+    description: "運用ヘルスとRunbook",
     icon: Settings,
   },
 ];

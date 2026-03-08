@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { count, desc, eq, notInArray } from "drizzle-orm";
 import { candidates, type Candidate, type NewCandidate } from "../schema";
 import type { DB } from "../types";
 
@@ -129,6 +129,28 @@ const findRecent = async (db: DB, limit = 50): Promise<Candidate[]> => {
     .limit(limit);
 };
 
+const OPEN_REVIEW_STATES_EXCLUDED: CandidateReviewState[] = ["approved", "rejected"];
+
+const findRecentOpen = async (db: DB, limit = 50): Promise<Candidate[]> => {
+  return await db
+    .select()
+    .from(candidates)
+    .where(notInArray(candidates.reviewState, OPEN_REVIEW_STATES_EXCLUDED))
+    .orderBy(desc(candidates.updatedAt), desc(candidates.createdAt))
+    .limit(limit);
+};
+
+const countOpen = async (db: DB): Promise<number> => {
+  const [row] = await db
+    .select({
+      value: count(candidates.id),
+    })
+    .from(candidates)
+    .where(notInArray(candidates.reviewState, OPEN_REVIEW_STATES_EXCLUDED));
+
+  return Number(row?.value ?? 0);
+};
+
 export const candidatesRepo = {
   insert,
   findById,
@@ -137,4 +159,6 @@ export const candidatesRepo = {
   approve,
   reject,
   findRecent,
+  findRecentOpen,
+  countOpen,
 };

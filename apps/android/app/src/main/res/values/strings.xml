@@ -1,0 +1,15 @@
+<resources>
+  <string name="app_name">Merchandise Android</string>
+  <string name="notification_listener_service_label">Mercari Notification Forwarder</string>
+  <string name="main_title">Mercari Notification Forwarder</string>
+  <string name="main_description">通知を受信し、apps/web の ingest API に転送します。SKU 判定や価格判定は端末で実行しません。</string>
+  <string name="open_notification_settings">通知アクセス設定を開く</string>
+  <string name="open_ingest_settings">送信設定を開く</string>
+  <string name="listener_enabled">通知アクセス: 有効</string>
+  <string name="listener_disabled">通知アクセス: 無効</string>
+  <string name="settings_title">Ingest 設定</string>
+  <string name="settings_endpoint_hint">https://example.com もしくは https://example.com/api/ingest/android</string>
+  <string name="settings_secret_hint">ANDROID_INGEST_SHARED_SECRET</string>
+  <string name="save_settings">保存</string>
+  <string name="saved">保存しました</string>
+</resources>

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@merchandise/contracts": ["../../packages/contracts/src/index.ts"],
+      "@merchandise/contracts/*": ["../../packages/contracts/src/*"],
+      "@merchandise/db": ["../../packages/db/src/index.ts"],
+      "@merchandise/db/*": ["../../packages/db/src/*"],
+      "@merchandise/domain": ["../../packages/domain/src/index.ts"],
+      "@merchandise/llm": ["../../packages/llm/src/index.ts"],
+      "@merchandise/mercari": ["../../packages/mercari/src/index.ts"],
+      "@merchandise/ui": ["../../packages/ui/src/index.ts"]
+    },
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": false,
+    "isolatedModules": true,
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "types": ["node"]
+  },
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

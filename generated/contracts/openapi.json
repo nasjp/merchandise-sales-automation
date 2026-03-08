@@ -1,0 +1,406 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Merchandise Sales Automation API",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/api/ingest/android": {
+      "post": {
+        "summary": "Ingest Android notification payload",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AndroidIngestPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AndroidIngestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/candidates/{candidateId}/approve": {
+      "post": {
+        "summary": "Approve candidate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "candidateId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CandidateApprovePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Candidate updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateReviewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/candidates/{candidateId}/reject": {
+      "post": {
+        "summary": "Reject candidate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "candidateId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CandidateRejectPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Candidate updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateReviewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/targets/{targetId}/refresh": {
+      "post": {
+        "summary": "Queue target snapshot refresh",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "targetId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Refresh queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TargetRefreshResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trigger/runs/{runId}": {
+      "get": {
+        "summary": "Get run status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "runId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TriggerRunResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trigger/runs/{runId}/reprocess": {
+      "post": {
+        "summary": "Requeue run by runId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "runId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Run requeued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TriggerRunReprocessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AndroidIngestPayload": {
+        "type": "object",
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sourcePackage": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "title",
+          "body"
+        ],
+        "additionalProperties": false
+      },
+      "AndroidIngestResponse": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string"
+          },
+          "deduped": {
+            "type": "boolean"
+          },
+          "queued": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "eventId",
+          "deduped",
+          "queued"
+        ],
+        "additionalProperties": false
+      },
+      "CandidateApprovePayload": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "additionalProperties": false
+      },
+      "CandidateRejectPayload": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "CandidateReviewResponse": {
+        "type": "object",
+        "properties": {
+          "candidateId": {
+            "type": "string"
+          },
+          "reviewState": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "needs_review",
+              "approved",
+              "rejected",
+              "excluded"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "candidateId",
+          "reviewState",
+          "reason",
+          "updatedAt"
+        ],
+        "additionalProperties": false
+      },
+      "TargetRefreshResponse": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "taskName": {
+            "type": "string",
+            "enum": [
+              "pricing.recomputeSnapshot"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued"
+            ]
+          }
+        },
+        "required": [
+          "runId",
+          "targetId",
+          "taskName",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "TriggerRunResponse": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string"
+          },
+          "taskName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "success",
+              "failed"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "runId",
+          "taskName",
+          "status",
+          "startedAt",
+          "finishedAt",
+          "payload"
+        ],
+        "additionalProperties": false
+      },
+      "TriggerRunReprocessResponse": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string"
+          },
+          "requeuedFromRunId": {
+            "type": "string"
+          },
+          "taskName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued"
+            ]
+          }
+        },
+        "required": [
+          "runId",
+          "requeuedFromRunId",
+          "taskName",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

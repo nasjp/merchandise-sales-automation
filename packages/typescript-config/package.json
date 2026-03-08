@@ -1,0 +1,12 @@
+{
+  "name": "@merchandise/typescript-config",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "echo \"skip lint for config-only package\""
+  },
+  "exports": {
+    "./base.json": "./base.json",
+    "./library.json": "./library.json"
+  }
+}

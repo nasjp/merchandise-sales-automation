@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@merchandise/db": ["../../packages/db/src/index.ts"],
+      "@merchandise/domain": ["../../packages/domain/src/index.ts"],
+      "@merchandise/llm": ["../../packages/llm/src/index.ts"],
+      "@merchandise/mercari": ["../../packages/mercari/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "trigger/**/*.ts"],
+  "exclude": ["dist", "node_modules", "**/*.spec.ts"]
+}

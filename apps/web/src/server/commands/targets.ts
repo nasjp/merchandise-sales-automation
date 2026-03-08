@@ -1,6 +1,6 @@
 import { repositoryLocator } from "@merchandise/db";
 import { getDb } from "@/server/db";
-import { queueTaskRun } from "@/server/trigger/client";
+import { queueTaskRunAndDispatch } from "@/server/trigger/client";
 
 const REFRESH_TASK_NAME = "pricing.recomputeSnapshot";
 
@@ -11,7 +11,7 @@ export const queueTargetRefresh = async (targetId: string) => {
     return null;
   }
 
-  const queued = await queueTaskRun({
+  const queued = await queueTaskRunAndDispatch({
     taskName: REFRESH_TASK_NAME,
     payload: { targetId },
   });

@@ -3,11 +3,18 @@ import { getJobsDb } from "../../src/factories/db";
 import { createQueuedRun } from "../../src/task-helpers/taskAudit";
 import { recomputeSnapshotForTarget } from "../../src/services/pricing";
 
-export const recomputeSnapshot = async (input: { targetId: string }) => {
-  const runId = await createQueuedRun({
-    taskName: "pricing.recomputeSnapshot",
-    payload: input,
-  });
+export const recomputeSnapshot = async (input: {
+  targetId: string;
+  runId?: string;
+}) => {
+  const runId =
+    input.runId ??
+    (await createQueuedRun({
+      taskName: "pricing.recomputeSnapshot",
+      payload: {
+        targetId: input.targetId,
+      },
+    }));
   const db = getJobsDb();
 
   try {

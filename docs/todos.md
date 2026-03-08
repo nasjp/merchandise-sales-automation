@@ -78,6 +78,8 @@
 - [x] Trigger run status API（`/api/trigger/runs/[runId]`）を実装する
 - [x] server 層（auth/db/queries/commands/trigger client）を分離する
 - [x] Android 送信元認証（HMAC など）を実装する
+- [x] `web` から Trigger API を呼び出して `pricing.recomputeSnapshot` task を起動する
+- [x] Trigger 起動失敗時に `task_audit` を `failed` へ更新し、`queued` 滞留を防ぐ
 
 完了条件:
 - [x] Android から送った通知が `raw_events` に保存される
@@ -147,6 +149,7 @@
 - [ ] Supabase 環境（staging/prod）を分離する
   - 現時点では実施保留（当面は分離しない方針）
 - [x] 環境変数管理（web/jobs/android）と秘密情報ローテーション手順を定義する
+- [x] `apps/web` に Trigger 実行キー（`TRIGGER_API_KEY`）を追加する
 - [x] 監視項目（失敗率、遅延、候補生成数、承認率）を決める
 
 完了条件:

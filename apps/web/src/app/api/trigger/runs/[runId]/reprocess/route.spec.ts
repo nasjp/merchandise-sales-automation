@@ -4,6 +4,7 @@ import { describe, expect, test, vi } from "vitest";
 import { POST } from "./route";
 
 let currentDb: TestDb | null = null;
+const dispatchTaskRunMock = vi.hoisted(() => vi.fn(async () => false));
 
 vi.mock("@/server/db", () => ({
   getDb: () => {
@@ -12,6 +13,10 @@ vi.mock("@/server/db", () => ({
     }
     return currentDb;
   },
+}));
+
+vi.mock("@/server/trigger/dispatcher", () => ({
+  dispatchTaskRun: dispatchTaskRunMock,
 }));
 
 const setupTestContext = async () => {
@@ -85,6 +90,14 @@ describe("POST /api/trigger/runs/[runId]/reprocess", () => {
     expect(row?.payload).toMatchObject({
       targetId: "target-1",
       requeuedFromRunId: "run-base-1",
+    });
+    expect(dispatchTaskRunMock).toHaveBeenCalledWith({
+      taskName: "pricing.recomputeSnapshot",
+      runId: body.runId,
+      payload: {
+        targetId: "target-1",
+        requeuedFromRunId: "run-base-1",
+      },
     });
   });
 });

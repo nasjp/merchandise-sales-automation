@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { repositoryLocator } from "@merchandise/db";
 import { getDb } from "@/server/db";
+import { dispatchTaskRun } from "./dispatcher";
 
 type QueueTaskRunInput = {
   taskName: string;
@@ -39,13 +40,33 @@ export const markTaskRunFinished = async (params: {
   });
 };
 
+export const queueTaskRunAndDispatch = async (input: QueueTaskRunInput) => {
+  const queued = await queueTaskRun(input);
+
+  try {
+    await dispatchTaskRun({
+      taskName: queued.taskName,
+      runId: queued.runId,
+      payload: queued.payload,
+    });
+  } catch (error) {
+    await markTaskRunFinished({
+      runId: queued.runId,
+      status: "failed",
+    });
+    throw error;
+  }
+
+  return queued;
+};
+
 export const requeueTaskRun = async (baseRunId: string) => {
   const current = await findTaskRun(baseRunId);
   if (!current) {
     return null;
   }
 
-  const queued = await queueTaskRun({
+  const queued = await queueTaskRunAndDispatch({
     taskName: current.taskName,
     payload: {
       ...current.payload,

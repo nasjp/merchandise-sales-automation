@@ -30,7 +30,18 @@ export default async function SettingsPage() {
     {
       name: "TRIGGER_API_BASE_URL",
       state: envState(Boolean(process.env.TRIGGER_API_BASE_URL)),
-      note: "Run再実行・ターゲット更新API",
+      note: "Trigger API ベースURL（未指定時は https://api.trigger.dev）",
+    },
+    {
+      name: "TRIGGER_API_KEY",
+      state: envState(
+        Boolean(
+          process.env.TRIGGER_API_KEY ??
+            process.env.TRIGGER_SECRET_KEY ??
+            process.env.TRIGGER_ACCESS_TOKEN,
+        ),
+      ),
+      note: "Trigger 実行キー（project API key 推奨）",
     },
     {
       name: "PASSWORD",

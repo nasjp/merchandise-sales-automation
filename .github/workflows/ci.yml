@@ -43,9 +43,11 @@ jobs:
 
   trigger_dry_run:
     needs: checks
-    if: github.event_name == 'pull_request' && secrets.TRIGGER_ACCESS_TOKEN != ''
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
 
     steps:
       - name: Checkout
@@ -65,10 +67,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Ensure Trigger PAT exists
+        run: |
+          if [ -z "${TRIGGER_ACCESS_TOKEN:-}" ]; then
+            echo "TRIGGER_ACCESS_TOKEN is required for Trigger.dev dry-run" >&2
+            exit 1
+          fi
+
       - name: Trigger.dev dry-run (prod)
         working-directory: apps/jobs
-        env:
-          TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
         run: pnpm dlx trigger.dev@latest deploy --config trigger.config.ts --env prod --dry-run
 
   deploy_trigger_prod:

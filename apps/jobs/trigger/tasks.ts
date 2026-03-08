@@ -34,7 +34,8 @@ export const refreshDueTargetsTask = task({
 
 export const recomputeSnapshotTask = task({
   id: "pricing-recompute-snapshot",
-  run: async (payload: { targetId: string }) => await recomputeSnapshot(payload),
+  run: async (payload: { targetId: string; runId?: string }) =>
+    await recomputeSnapshot(payload),
 });
 
 export const backfillSnapshotsTask = task({

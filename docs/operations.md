@@ -14,6 +14,7 @@
 - `DATABASE_URL`: Supabase Postgres 接続文字列
 - `ANDROID_INGEST_SHARED_SECRET`: Android 署名検証キー
 - `TRIGGER_API_BASE_URL`: Trigger API ベース URL
+- `TRIGGER_API_KEY`: Trigger 実行用キー（project API key）
 - `PASSWORD`: production UI のパスワード入力画面で使うパスワード
 
 ### apps/jobs

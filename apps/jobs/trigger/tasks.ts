@@ -2,12 +2,14 @@ import { task } from "@trigger.dev/sdk/v3";
 import { explainOutlier } from "./ai/explainOutlier";
 import { extractListingAttributes } from "./ai/extractListingAttributes";
 import { evaluateCandidate } from "./candidates/evaluateCandidate";
+import { notifySlackCandidate } from "./candidates/notifySlackCandidate";
 import { publishReviewState } from "./candidates/publishReviewState";
 import { processRawEvent } from "./ingest/processRawEvent";
 import { reprocessRawEvent } from "./ingest/reprocessRawEvent";
 import { cleanupOldArtifacts } from "./maintenance/cleanupOldArtifacts";
 import { retryStuckRuns } from "./maintenance/retryStuckRuns";
 import { backfillSnapshots } from "./pricing/backfillSnapshots";
+import { probeMercariSoldData } from "./pricing/probeMercari";
 import { recomputeSnapshot } from "./pricing/recomputeSnapshot";
 import { refreshDueTargets } from "./pricing/refreshDueTargets";
 import {
@@ -43,6 +45,12 @@ export const backfillSnapshotsTask = task({
   run: async (payload: { days: number }) => await backfillSnapshots(payload),
 });
 
+export const probeMercariSoldDataTask = task({
+  id: "pricing-probe-mercari",
+  run: async (payload: { keyword: string; pageSize?: number; maxPages?: number }) =>
+    await probeMercariSoldData(payload),
+});
+
 export const evaluateCandidateTask = task({
   id: "candidates-evaluate",
   run: async (payload: {
@@ -61,6 +69,18 @@ export const publishReviewStateTask = task({
     reviewState: "approved" | "rejected";
     reason?: string;
   }) => await publishReviewState(payload),
+});
+
+export const notifySlackCandidateTask = task({
+  id: "candidates-notify-slack",
+  run: async (payload: {
+    runId?: string;
+    candidateId: string;
+    listingTitle: string;
+    listingPriceYen: number;
+    score: number;
+    reason?: string | null;
+  }) => await notifySlackCandidate(payload),
 });
 
 export const explainOutlierTask = task({

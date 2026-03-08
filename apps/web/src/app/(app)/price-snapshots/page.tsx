@@ -14,14 +14,14 @@ export default async function PriceSnapshotsPage() {
     const rows = await listRecentSnapshots(50);
 
     return (
-      <PageScaffold title="Price Snapshots" description="相場計算の最新 50 件を確認します。">
+      <PageScaffold title="Price Snapshots" description="相場データの履歴を確認できます。">
         <DataSection
           title="Price Snapshots"
           subtitle="最新 50 件"
           toolbar={<Badge variant="secondary">件数: {rows.length}</Badge>}
         >
           {rows.length === 0 ? (
-            <EmptyState description="スナップショットが0件です。`/targets` の「相場更新」を実行するか、定期ジョブの実行状態を確認してください。" />
+            <EmptyState description="相場データがまだありません。`/targets` の「相場更新」を実行してください。" />
           ) : (
             <Table>
               <TableHeader>
@@ -53,7 +53,7 @@ export default async function PriceSnapshotsPage() {
     );
   } catch (error) {
     return (
-      <PageScaffold title="Price Snapshots" description="相場計算の最新 50 件を確認します。">
+      <PageScaffold title="Price Snapshots" description="相場データの履歴を確認できます。">
         <ErrorState message={error instanceof Error ? error.message : "unknown error"} />
       </PageScaffold>
     );

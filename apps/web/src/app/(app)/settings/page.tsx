@@ -11,22 +11,21 @@ export default async function SettingsPage() {
   const summary = await getDataHealthSummary();
 
   return (
-    <PageScaffold title="Settings" description="運用ヘルス確認とRunbook導線を提供します。">
+    <PageScaffold title="Settings" description="運用状況の確認と対応手順の参照ができます。">
       {summary.activeTargetCount === 0 ? (
         <Alert variant="destructive">
-          <AlertTitle>Targets が 0 件です</AlertTitle>
+          <AlertTitle>監視対象が登録されていません</AlertTitle>
           <AlertDescription>
-            `targets` が空のため `/targets` と `/price-snapshots` が空表示になります。README の
-            `pnpm db:seed` 手順を確認してください。
+            監視対象が未登録のため、`/targets` と `/price-snapshots` は空になります。初期設定を完了してください。
           </AlertDescription>
         </Alert>
       ) : null}
 
       {summary.activeTargetCount > 0 && summary.recentSnapshotCount === 0 ? (
         <Alert>
-          <AlertTitle>Price Snapshots が 0 件です</AlertTitle>
+          <AlertTitle>相場データがまだ作成されていません</AlertTitle>
           <AlertDescription>
-            ターゲットは存在しますがスナップショットが未生成です。`/targets` で「相場更新」を実行してください。
+            監視対象は登録済みですが、相場データがありません。`/targets` で「相場更新」を実行してください。
           </AlertDescription>
         </Alert>
       ) : null}
@@ -64,10 +63,10 @@ export default async function SettingsPage() {
             日次確認、障害トリアージ、再処理基準、エスカレーション基準を Runbook に集約しています。
           </p>
           <Link href="/runs" className="underline underline-offset-4">
-            `/runs` で失敗 run の再処理を実行
+            `/runs` で失敗した実行を再処理する
           </Link>
           <Link href="/targets" className="underline underline-offset-4">
-            `/targets` で相場更新ジョブを投入
+            `/targets` で相場データを更新する
           </Link>
           <p className="text-muted-foreground">運用手順: `docs/runbook.md` / `docs/operations.md`</p>
         </CardContent>

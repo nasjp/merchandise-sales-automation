@@ -2,6 +2,7 @@ import { task } from "@trigger.dev/sdk/v3";
 import { explainOutlier } from "./ai/explainOutlier";
 import { extractListingAttributes } from "./ai/extractListingAttributes";
 import { evaluateCandidate } from "./candidates/evaluateCandidate";
+import { notifySlackCandidate } from "./candidates/notifySlackCandidate";
 import { publishReviewState } from "./candidates/publishReviewState";
 import { processRawEvent } from "./ingest/processRawEvent";
 import { reprocessRawEvent } from "./ingest/reprocessRawEvent";
@@ -61,6 +62,18 @@ export const publishReviewStateTask = task({
     reviewState: "approved" | "rejected";
     reason?: string;
   }) => await publishReviewState(payload),
+});
+
+export const notifySlackCandidateTask = task({
+  id: "candidates-notify-slack",
+  run: async (payload: {
+    runId?: string;
+    candidateId: string;
+    listingTitle: string;
+    listingPriceYen: number;
+    score: number;
+    reason?: string | null;
+  }) => await notifySlackCandidate(payload),
 });
 
 export const explainOutlierTask = task({

@@ -22,6 +22,17 @@
 - `DATABASE_URL`: Supabase Postgres 接続文字列
 - `TRIGGER_API_KEY`: Trigger 実行用キー
 - `TRIGGER_API_BASE_URL`: Trigger API ベース URL
+- `SLACK_SIGNING_SECRET`: Slack 署名シークレット
+- `SLACK_BOT_TOKEN`: Slack Bot token（通知送信用）
+- `SLACK_CHANNEL_NAME`: Slack 投稿先チャネル名
+- `WEB_BASE_URL`: Candidate 詳細URL組み立て用の公開ベース URL（例: `https://merchandise.example.com`）
+- `PRICING_SOURCE`: `auto | mercari | synthetic`（既定: `auto`）
+- `PRICING_MERCARI_TIMEOUT_MS`: Mercari API 1リクエストの timeout（既定: 8000）
+- `PRICING_MERCARI_MAX_RETRIES`: Mercari API retry 回数（既定: 2）
+- `PRICING_MERCARI_RETRY_BASE_DELAY_MS`: retry 間隔の基準 ms（既定: 300）
+- `PRICING_MERCARI_PAGE_SIZE`: 1回の検索件数（既定: 80, 上限: 120）
+- `PRICING_MERCARI_MAX_PAGES`: 取得ページ数上限（既定: 2）
+- `PRICING_MERCARI_MIN_SAMPLE_COUNT`: 実売価格採用に必要な最小サンプル数（既定: 8）
 
 ### apps/android
 
@@ -76,3 +87,20 @@
 - Supabase を `staging` / `production` で分離
 
 実施後に必ず `staging` で E2E を実行する。
+
+## 5. Trigger.dev での実売データ調査
+
+`apps/jobs` の task `pricing-probe-mercari` を Trigger.dev ダッシュボードから実行する。
+
+- payload 例:
+  - `{"keyword":"PS5 CFI-2000","pageSize":80,"maxPages":2}`
+- 返却内容:
+  - `statusCounts` / `itemTypeCounts`
+  - `priceStats`（count/min/max/median）
+  - `sample`（先頭10件）
+
+制約上の注意:
+
+- `trigger.config.ts` の `maxDuration` は 300 秒
+- Mercari API は 429/5xx を返すことがあるため、timeout/retry を前提にする
+- `pricing.refreshDueTargets` は対象数が多い場合、`PRICING_MERCARI_MAX_PAGES` を下げて実行時間を抑える

@@ -1,6 +1,7 @@
 import type { AndroidIngestPayload } from "@merchandise/contracts";
 import { repositoryLocator } from "@merchandise/db";
 import { buildRawEventDedupeKey } from "@/lib/dedupe";
+import { queueCandidateSlackNotification } from "@/server/commands/queueCandidateSlackNotification";
 import { getDb } from "@/server/db";
 import { generateCandidateFromRawEvent } from "@/server/commands/ingestPipeline";
 import { markTaskRunFinished, queueTaskRun } from "@/server/trigger/client";
@@ -28,7 +29,17 @@ export const ingestAndroidPayload = async (payload: AndroidIngestPayload) => {
     });
 
     try {
-      await generateCandidateFromRawEvent(event.id);
+      const candidate = await generateCandidateFromRawEvent(event.id);
+      try {
+        await queueCandidateSlackNotification(candidate);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("[web] failed to enqueue candidate slack notification", {
+          candidateId: candidate.id,
+          error: message,
+        });
+      }
+
       await markTaskRunFinished({
         runId: run.runId,
         status: "success",

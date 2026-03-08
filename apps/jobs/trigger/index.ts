@@ -1,6 +1,7 @@
 export * from "./ai/explainOutlier";
 export * from "./ai/extractListingAttributes";
 export * from "./candidates/evaluateCandidate";
+export * from "./candidates/notifySlackCandidate";
 export * from "./candidates/publishReviewState";
 export * from "./ingest/processRawEvent";
 export * from "./ingest/reprocessRawEvent";

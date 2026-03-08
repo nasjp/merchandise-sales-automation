@@ -6,6 +6,8 @@ const resolveTriggerTaskId = (taskName: string): string | null => {
   switch (taskName) {
     case "pricing.recomputeSnapshot":
       return "pricing-recompute-snapshot";
+    case "candidates.notifySlack":
+      return "candidates-notify-slack";
     default:
       return null;
   }
@@ -34,6 +36,39 @@ const buildTriggerPayload = (params: {
     return {
       targetId,
       runId: params.runId,
+    };
+  }
+
+  if (params.taskName === "candidates.notifySlack") {
+    const candidateId = params.payload.candidateId;
+    const listingTitle = params.payload.listingTitle;
+    const listingPriceYen = params.payload.listingPriceYen;
+    const score = params.payload.score;
+    const reason = params.payload.reason;
+
+    if (typeof candidateId !== "string" || candidateId.length === 0) {
+      throw new Error("candidateId is required for candidates.notifySlack");
+    }
+    if (typeof listingTitle !== "string" || listingTitle.length === 0) {
+      throw new Error("listingTitle is required for candidates.notifySlack");
+    }
+    if (typeof listingPriceYen !== "number" || !Number.isFinite(listingPriceYen)) {
+      throw new Error("listingPriceYen must be a finite number for candidates.notifySlack");
+    }
+    if (typeof score !== "number" || !Number.isFinite(score)) {
+      throw new Error("score must be a finite number for candidates.notifySlack");
+    }
+    if (reason !== null && reason !== undefined && typeof reason !== "string") {
+      throw new Error("reason must be string | null for candidates.notifySlack");
+    }
+
+    return {
+      runId: params.runId,
+      candidateId,
+      listingTitle,
+      listingPriceYen,
+      score,
+      reason: reason ?? null,
     };
   }
 

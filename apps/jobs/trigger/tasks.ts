@@ -9,7 +9,6 @@ import { reprocessRawEvent } from "./ingest/reprocessRawEvent";
 import { cleanupOldArtifacts } from "./maintenance/cleanupOldArtifacts";
 import { retryStuckRuns } from "./maintenance/retryStuckRuns";
 import { backfillSnapshots } from "./pricing/backfillSnapshots";
-import { probeMercariSoldData } from "./pricing/probeMercari";
 import { recomputeSnapshot } from "./pricing/recomputeSnapshot";
 import { refreshDueTargets } from "./pricing/refreshDueTargets";
 import {
@@ -43,12 +42,6 @@ export const recomputeSnapshotTask = task({
 export const backfillSnapshotsTask = task({
   id: "pricing-backfill-snapshots",
   run: async (payload: { days: number }) => await backfillSnapshots(payload),
-});
-
-export const probeMercariSoldDataTask = task({
-  id: "pricing-probe-mercari",
-  run: async (payload: { keyword: string; pageSize?: number; maxPages?: number }) =>
-    await probeMercariSoldData(payload),
 });
 
 export const evaluateCandidateTask = task({

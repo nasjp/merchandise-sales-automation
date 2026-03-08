@@ -33,6 +33,12 @@
 - `PRICING_MERCARI_PAGE_SIZE`: 1回の検索件数（既定: 80, 上限: 120）
 - `PRICING_MERCARI_MAX_PAGES`: 取得ページ数上限（既定: 2）
 - `PRICING_MERCARI_MIN_SAMPLE_COUNT`: 実売価格採用に必要な最小サンプル数（既定: 8）
+- `OPENAI_API_KEY`: 実売データ仕訳（vercel/ai）で使用する API key
+- `PRICING_CLASSIFIER_MODEL`: 仕訳モデル名（既定: `gpt-5.4-2026-03-05`）
+- `PRICING_CLASSIFIER_TIMEOUT_MS`: 仕訳 LLM timeout（既定: 12000）
+- `PRICING_CLASSIFIER_MIN_CONFIDENCE`: include 最低 confidence（既定: 0.6）
+- `PRICING_CLASSIFIER_BATCH_SIZE`: 仕訳 1バッチ件数（既定: 25）
+- `PRICING_CLASSIFIER_MAX_ITEMS`: 仕訳対象最大件数（既定: 120）
 
 ### apps/android
 
@@ -103,4 +109,5 @@
 
 - `trigger.config.ts` の `maxDuration` は 300 秒
 - Mercari API は 429/5xx を返すことがあるため、timeout/retry を前提にする
+- 仕訳 LLM が timeout/429 等で失敗した場合はフェイルソフトせず task を失敗させる（不完全データを採用しない）
 - `pricing.refreshDueTargets` は対象数が多い場合、`PRICING_MERCARI_MAX_PAGES` を下げて実行時間を抑える

@@ -35,8 +35,48 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: TypeScript (tsc)
+        run: pnpm -r --if-present run typecheck
+
       - name: Test
         run: pnpm test
+
+  trigger_dry_run:
+    needs: checks
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.6.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Ensure Trigger PAT exists
+        run: |
+          if [ -z "${TRIGGER_ACCESS_TOKEN:-}" ]; then
+            echo "TRIGGER_ACCESS_TOKEN is required for Trigger.dev dry-run" >&2
+            exit 1
+          fi
+
+      - name: Trigger.dev dry-run (prod)
+        working-directory: apps/jobs
+        run: pnpm dlx trigger.dev@latest deploy --config trigger.config.ts --env prod --dry-run
 
   deploy_trigger_prod:
     needs: checks

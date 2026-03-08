@@ -1,7 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isAuthorizedByPassword, shouldProtectUi } from "./server/uiPasswordGate";
+import {
+  UI_AUTH_COOKIE_NAME,
+  hasValidPasswordCookie,
+  normalizeNextPath,
+  shouldProtectUi,
+} from "./server/uiPasswordGate";
 
-const WWW_AUTHENTICATE_VALUE = 'Basic realm="merchandise-sales-automation"';
+const UNLOCK_PATH = "/unlock";
 
 export function proxy(request: NextRequest) {
   if (!shouldProtectUi(process.env)) {
@@ -13,21 +18,35 @@ export function proxy(request: NextRequest) {
     return new NextResponse("PASSWORD is not configured.", { status: 503 });
   }
 
-  if (
-    isAuthorizedByPassword({
-      authorizationHeader: request.headers.get("authorization"),
-      password,
-    })
-  ) {
+  const cookiePassword = request.cookies.get(UI_AUTH_COOKIE_NAME)?.value;
+  const hasAuthCookie = hasValidPasswordCookie({
+    cookiePassword,
+    password,
+  });
+
+  if (request.nextUrl.pathname === UNLOCK_PATH) {
+    if (!hasAuthCookie) {
+      return NextResponse.next();
+    }
+
+    const homeUrl = request.nextUrl.clone();
+    homeUrl.pathname = "/";
+    homeUrl.search = "";
+    return NextResponse.redirect(homeUrl);
+  }
+
+  if (hasAuthCookie) {
     return NextResponse.next();
   }
 
-  return new NextResponse("Authentication required.", {
-    status: 401,
-    headers: {
-      "WWW-Authenticate": WWW_AUTHENTICATE_VALUE,
-    },
-  });
+  const unlockUrl = request.nextUrl.clone();
+  unlockUrl.pathname = UNLOCK_PATH;
+  unlockUrl.search = "";
+  unlockUrl.searchParams.set(
+    "next",
+    normalizeNextPath(`${request.nextUrl.pathname}${request.nextUrl.search}`),
+  );
+  return NextResponse.redirect(unlockUrl);
 }
 
 export const config = {
@@ -36,4 +55,3 @@ export const config = {
     "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
   ],
 };
-

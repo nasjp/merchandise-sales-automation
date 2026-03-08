@@ -1,4 +1,4 @@
-const BASIC_PREFIX = "Basic ";
+export const UI_AUTH_COOKIE_NAME = "msa_ui_password";
 
 export const shouldProtectUi = (env: NodeJS.ProcessEnv): boolean => {
   if (env.VERCEL_ENV) {
@@ -8,43 +8,29 @@ export const shouldProtectUi = (env: NodeJS.ProcessEnv): boolean => {
   return env.NODE_ENV === "production";
 };
 
-const decodeBase64 = (value: string): string | null => {
-  try {
-    if (typeof atob === "function") {
-      return atob(value);
-    }
-
-    return Buffer.from(value, "base64").toString("utf8");
-  } catch {
-    return null;
-  }
-};
-
-export const isAuthorizedByPassword = (params: {
-  authorizationHeader: string | null;
+export const hasValidPasswordCookie = (params: {
+  cookiePassword: string | null | undefined;
   password: string;
 }): boolean => {
-  const { authorizationHeader, password } = params;
-  if (!authorizationHeader?.startsWith(BASIC_PREFIX)) {
+  const { cookiePassword, password } = params;
+  if (!cookiePassword) {
     return false;
   }
 
-  const encodedCredentials = authorizationHeader.slice(BASIC_PREFIX.length).trim();
-  if (!encodedCredentials) {
-    return false;
-  }
-
-  const decodedCredentials = decodeBase64(encodedCredentials);
-  if (!decodedCredentials) {
-    return false;
-  }
-
-  const separatorIndex = decodedCredentials.indexOf(":");
-  if (separatorIndex < 0) {
-    return false;
-  }
-
-  const providedPassword = decodedCredentials.slice(separatorIndex + 1);
-  return providedPassword === password;
+  return cookiePassword === password;
 };
 
+export const normalizeNextPath = (
+  value: string | null | undefined,
+  fallback = "/",
+): string => {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return fallback;
+  }
+
+  if (value === "/unlock" || value.startsWith("/unlock?")) {
+    return fallback;
+  }
+
+  return value;
+};

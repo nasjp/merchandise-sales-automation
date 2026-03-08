@@ -45,4 +45,4 @@ Supabase は Postgres のホスティング先としてのみ扱い、`supabase-
 
 ## production UI 保護
 
-`apps/web` は production 環境で `PASSWORD` を使った Basic 認証を有効化します。
+`apps/web` は production 環境で `PASSWORD` を使ったパスワード入力画面を有効化します。

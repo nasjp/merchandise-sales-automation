@@ -9,13 +9,14 @@
     "lint": "eslint \"src/**/*.ts\" \"trigger/**/*.ts\" --max-warnings 0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
-    "trigger:dev": "node -e \"console.log('trigger:dev placeholder')\""
+    "trigger:dev": "pnpm dlx trigger.dev@latest dev --config trigger.config.ts --env-file ../../.env.production"
   },
   "dependencies": {
     "@merchandise/db": "workspace:*",
     "@merchandise/domain": "workspace:*",
     "@merchandise/llm": "workspace:*",
-    "@merchandise/mercari": "workspace:*"
+    "@merchandise/mercari": "workspace:*",
+    "@trigger.dev/sdk": "4.4.2"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",

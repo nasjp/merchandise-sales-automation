@@ -10,3 +10,4 @@ export * from "./pricing/backfillSnapshots";
 export * from "./pricing/recomputeSnapshot";
 export * from "./pricing/refreshDueTargets";
 export * from "./scheduled";
+export * from "./tasks";

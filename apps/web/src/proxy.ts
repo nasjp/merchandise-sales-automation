@@ -29,10 +29,11 @@ export function proxy(request: NextRequest) {
       return NextResponse.next();
     }
 
-    const homeUrl = request.nextUrl.clone();
-    homeUrl.pathname = "/";
-    homeUrl.search = "";
-    return NextResponse.redirect(homeUrl);
+    const nextPath = normalizeNextPath(request.nextUrl.searchParams.get("next"));
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = nextPath;
+    redirectUrl.search = "";
+    return NextResponse.redirect(redirectUrl);
   }
 
   if (hasAuthCookie) {

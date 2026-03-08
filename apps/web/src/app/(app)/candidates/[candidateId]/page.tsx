@@ -73,14 +73,31 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
                   {candidate.reviewState}
                 </Badge>
               </p>
+              <p className="sm:col-span-2">
+                <span className="text-muted-foreground">商品URL:</span>{" "}
+                {candidate.listingUrl ? (
+                  <a
+                    href={candidate.listingUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-xs underline underline-offset-4"
+                  >
+                    {candidate.listingUrl}
+                  </a>
+                ) : (
+                  <span className="text-muted-foreground">URL未抽出</span>
+                )}
+              </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <Button variant="outline" asChild>
-                <a href={candidate.mercariLink.href} target="_blank" rel="noreferrer">
-                  {candidate.mercariLink.type === "item" ? "商品ページを開く" : "メルカリ検索を開く"}
-                </a>
-              </Button>
+              {candidate.listingUrl ? (
+                <Button variant="outline" asChild>
+                  <a href={candidate.listingUrl} target="_blank" rel="noreferrer">
+                    商品URLを開く
+                  </a>
+                </Button>
+              ) : null}
               <CandidateActions candidateId={candidate.id} />
             </div>
 

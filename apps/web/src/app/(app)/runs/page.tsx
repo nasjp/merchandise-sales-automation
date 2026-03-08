@@ -39,7 +39,7 @@ export default async function RunsPage() {
                   <TableHead>Status</TableHead>
                   <TableHead>Started At</TableHead>
                   <TableHead>Finished At</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="w-[10rem]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

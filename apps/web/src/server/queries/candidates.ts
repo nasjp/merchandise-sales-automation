@@ -1,10 +1,20 @@
 import { repositoryLocator } from "@merchandise/db";
-import { resolveMercariLink } from "@/lib/mercari";
+import { extractMercariItemUrl } from "@/lib/mercari";
 import { getDb } from "@/server/db";
 
-export const listRecentCandidatesWithContext = async (limit = 50) => {
+export type CandidateListScope = "open" | "all";
+
+export const listRecentCandidatesWithContext = async (input?: {
+  limit?: number;
+  scope?: CandidateListScope;
+}) => {
   const db = getDb();
-  const rows = await repositoryLocator.candidates.findRecent(db, limit);
+  const limit = input?.limit ?? 50;
+  const scope = input?.scope ?? "open";
+  const rows =
+    scope === "all"
+      ? await repositoryLocator.candidates.findRecent(db, limit)
+      : await repositoryLocator.candidates.findRecentOpen(db, limit);
 
   const rowsWithContext = await Promise.all(
     rows.map(async (row) => {
@@ -21,7 +31,7 @@ export const listRecentCandidatesWithContext = async (limit = 50) => {
         reviewState: row.reviewState,
         updatedAt: row.updatedAt,
         reason: row.reason,
-        mercariLink: resolveMercariLink({
+        listingUrl: extractMercariItemUrl({
           title: rawEvent.title,
           body: rawEvent.body,
         }),
@@ -30,6 +40,11 @@ export const listRecentCandidatesWithContext = async (limit = 50) => {
   );
 
   return rowsWithContext.filter((row) => row !== null);
+};
+
+export const countOpenCandidates = async () => {
+  const db = getDb();
+  return await repositoryLocator.candidates.countOpen(db);
 };
 
 export const findCandidateDetail = async (candidateId: string) => {
@@ -60,7 +75,7 @@ export const findCandidateDetail = async (candidateId: string) => {
     targetTitleKeyword: target?.titleKeyword ?? null,
     targetModelKeyword: target?.modelKeyword ?? null,
     latestSnapshot,
-    mercariLink: resolveMercariLink({
+    listingUrl: extractMercariItemUrl({
       title: rawEvent.title,
       body: rawEvent.body,
     }),

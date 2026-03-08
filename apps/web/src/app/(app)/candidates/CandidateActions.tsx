@@ -20,7 +20,6 @@ type Props = {
 
 type Feedback = {
   type: "success" | "error";
-  message: string;
 };
 
 async function postJson(path: string, payload: Record<string, unknown>) {
@@ -49,17 +48,17 @@ export function CandidateActions({ candidateId }: Props) {
     startTransition(async () => {
       try {
         await postJson(`/api/candidates/${candidateId}/approve`, {});
-        setFeedback({ type: "success", message: "承認しました" });
+        setFeedback({ type: "success" });
         router.refresh();
       } catch {
-        setFeedback({ type: "error", message: "承認に失敗しました" });
+        setFeedback({ type: "error" });
       }
     });
   };
 
   const reject = () => {
     if (!rejectReason.trim()) {
-      setFeedback({ type: "error", message: "却下理由を入力してください" });
+      setFeedback({ type: "error" });
       return;
     }
 
@@ -68,59 +67,61 @@ export function CandidateActions({ candidateId }: Props) {
         await postJson(`/api/candidates/${candidateId}/reject`, {
           reason: rejectReason.trim(),
         });
-        setFeedback({ type: "success", message: "却下しました" });
+        setFeedback({ type: "success" });
         setRejectOpen(false);
         router.refresh();
       } catch {
-        setFeedback({ type: "error", message: "却下に失敗しました" });
+        setFeedback({ type: "error" });
       }
     });
   };
 
   return (
-    <div className="space-y-1">
-      <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" size="sm" variant="secondary" disabled={pending} onClick={approve}>
-          承認
-        </Button>
+    <div className="flex min-h-9 items-center gap-2 whitespace-nowrap">
+      <Button type="button" size="sm" variant="secondary" disabled={pending} onClick={approve}>
+        {pending ? "処理中" : "承認"}
+      </Button>
 
-        <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
-          <DialogTrigger asChild>
-            <Button type="button" size="sm" variant="outline" disabled={pending}>
-              却下
+      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
+        <DialogTrigger asChild>
+          <Button type="button" size="sm" variant="outline" disabled={pending}>
+            却下
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>候補を却下する</DialogTitle>
+            <DialogDescription>却下理由を入力すると履歴に保存されます。</DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={rejectReason}
+            onChange={(event) => setRejectReason(event.currentTarget.value)}
+            placeholder="manual reject"
+            disabled={pending}
+          />
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setRejectOpen(false)} disabled={pending}>
+              キャンセル
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>候補を却下する</DialogTitle>
-              <DialogDescription>却下理由を入力すると履歴に保存されます。</DialogDescription>
-            </DialogHeader>
-            <Textarea
-              value={rejectReason}
-              onChange={(event) => setRejectReason(event.currentTarget.value)}
-              placeholder="manual reject"
-              disabled={pending}
-            />
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setRejectOpen(false)} disabled={pending}>
-                キャンセル
-              </Button>
-              <Button type="button" variant="destructive" onClick={reject} disabled={pending}>
-                却下を確定
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+            <Button type="button" variant="destructive" onClick={reject} disabled={pending}>
+              却下を確定
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {feedback ? (
-        <p
-          className={`text-xs ${feedback.type === "error" ? "text-destructive" : "text-emerald-600"}`}
-          aria-live="polite"
-        >
-          {feedback.message}
-        </p>
-      ) : null}
+      <span
+        className={`inline-flex h-7 w-12 items-center justify-center rounded border text-xs ${
+          feedback?.type === "error"
+            ? "border-destructive/40 text-destructive"
+            : feedback?.type === "success"
+              ? "border-emerald-600/30 text-emerald-700"
+              : "border-border text-muted-foreground"
+        }`}
+        aria-live="polite"
+      >
+        {feedback ? (feedback.type === "error" ? "失敗" : "完了") : ""}
+      </span>
     </div>
   );
 }

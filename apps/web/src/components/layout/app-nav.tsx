@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { appNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -23,7 +24,11 @@ const isActivePath = (pathname: string, href: string) => {
   return pathname === href || pathname.startsWith(`${href}/`);
 };
 
-export function AppNav() {
+type AppNavProps = {
+  openCandidatesCount: number;
+};
+
+export function AppNav({ openCandidatesCount }: AppNavProps) {
   const pathname = usePathname();
 
   return (
@@ -40,7 +45,14 @@ export function AppNav() {
               className={cn(active ? "font-semibold" : "text-muted-foreground")}
             >
               <Link href={item.href} aria-current={active ? "page" : undefined}>
-                {item.label}
+                <span className="inline-flex items-center gap-2">
+                  {item.label}
+                  {item.href === "/candidates" && openCandidatesCount > 0 ? (
+                    <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">
+                      {openCandidatesCount}
+                    </Badge>
+                  ) : null}
+                </span>
               </Link>
             </Button>
           );
@@ -76,7 +88,16 @@ export function AppNav() {
                         <Icon className="h-4 w-4" />
                       </span>
                       <span className="text-left">
-                        <span className="block text-sm font-medium">{item.label}</span>
+                        <span className="block text-sm font-medium">
+                          <span className="inline-flex items-center gap-2">
+                            {item.label}
+                            {item.href === "/candidates" && openCandidatesCount > 0 ? (
+                              <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">
+                                {openCandidatesCount}
+                              </Badge>
+                            ) : null}
+                          </span>
+                        </span>
                         <span className="block text-xs text-muted-foreground">{item.description}</span>
                       </span>
                     </Link>

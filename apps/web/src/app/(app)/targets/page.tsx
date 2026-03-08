@@ -5,7 +5,7 @@ import { DataSection } from "@/components/page/data-section";
 import { PageScaffold } from "@/components/page/page-scaffold";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime, formatYen } from "@/lib/format";
 import { listActiveTargets } from "@/server/queries/dashboard";
 
 export const dynamic = "force-dynamic";
@@ -31,8 +31,12 @@ export default async function TargetsPage() {
                   <TableHead>SKU</TableHead>
                   <TableHead>Title Keyword</TableHead>
                   <TableHead>Model Keyword</TableHead>
+                  <TableHead className="text-right">Sell Estimate</TableHead>
+                  <TableHead className="text-right">Buy Limit</TableHead>
+                  <TableHead className="text-right">Liquidity</TableHead>
+                  <TableHead>Observed At</TableHead>
                   <TableHead>Updated At</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="w-[10rem]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -42,6 +46,18 @@ export default async function TargetsPage() {
                     <TableCell className="font-mono text-xs">{row.sku}</TableCell>
                     <TableCell>{row.titleKeyword}</TableCell>
                     <TableCell>{row.modelKeyword ?? "-"}</TableCell>
+                    <TableCell className="text-right">
+                      {row.latestSnapshot ? formatYen(row.latestSnapshot.sellEstimateYen) : "-"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {row.latestSnapshot ? formatYen(row.latestSnapshot.buyLimitYen) : "-"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {row.latestSnapshot ? row.latestSnapshot.liquidityScore.toFixed(2) : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {row.latestSnapshot ? formatDateTime(row.latestSnapshot.observedAt) : "-"}
+                    </TableCell>
                     <TableCell>{formatDateTime(row.updatedAt)}</TableCell>
                     <TableCell>
                       <TargetRefreshAction targetId={row.id} />

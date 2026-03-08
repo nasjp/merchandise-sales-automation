@@ -20,6 +20,7 @@ const setupTestContext = async () => {
 const seedCandidate = async (params: {
   ctx: Awaited<ReturnType<typeof setupTestContext>>;
   suffix: string;
+  reviewState?: "pending" | "needs_review" | "approved" | "rejected" | "excluded";
 }) => {
   const rawEvent = await params.ctx.repositoryLocator.rawEvents.insert(params.ctx.testDb, {
     source: "android",
@@ -34,7 +35,7 @@ const seedCandidate = async (params: {
     rawEventId: rawEvent.id,
     listingTitle: `candidate-${params.suffix}`,
     listingPriceYen: 30000,
-    reviewState: "pending",
+    reviewState: params.reviewState ?? "pending",
   });
 };
 
@@ -141,5 +142,26 @@ describe("repositoryLocator.candidates.reject", () => {
 
       expect(got).toBeNull();
     });
+  });
+});
+
+describe("repositoryLocator.candidates.findRecentOpen / countOpen", () => {
+  test("approved/rejected を除外した候補を返し、件数を数える", async () => {
+    await using ctx = await setupTestContext();
+    await seedCandidate({ ctx, suffix: "pending", reviewState: "pending" });
+    await seedCandidate({ ctx, suffix: "needs-review", reviewState: "needs_review" });
+    await seedCandidate({ ctx, suffix: "excluded", reviewState: "excluded" });
+    await seedCandidate({ ctx, suffix: "approved", reviewState: "approved" });
+    await seedCandidate({ ctx, suffix: "rejected", reviewState: "rejected" });
+
+    const rows = await ctx.repositoryLocator.candidates.findRecentOpen(ctx.testDb, 10);
+    const count = await ctx.repositoryLocator.candidates.countOpen(ctx.testDb);
+
+    expect(rows.map((row) => row.reviewState).sort()).toEqual([
+      "excluded",
+      "needs_review",
+      "pending",
+    ]);
+    expect(count).toBe(3);
   });
 });

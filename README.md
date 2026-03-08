@@ -42,3 +42,7 @@ Supabase は Postgres のホスティング先としてのみ扱い、`supabase-
 
 - [docs/operations.md](/Users/nasjp/ghq/github.com/nasjp/merchandise-sales-automation/docs/operations.md)
 - [docs/runbook.md](/Users/nasjp/ghq/github.com/nasjp/merchandise-sales-automation/docs/runbook.md)
+
+## production UI 保護
+
+`apps/web` は production 環境で `PASSWORD` を使った Basic 認証を有効化します。

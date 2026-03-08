@@ -15,7 +15,9 @@
     "lint": "eslint \"src/**/*.ts\" --max-warnings 0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "db:generate": "drizzle-kit generate --config=drizzle.config.ts"
+    "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
+    "db:seed": "psql \"$DATABASE_URL\" -f ../../database/seed.sql"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.5",

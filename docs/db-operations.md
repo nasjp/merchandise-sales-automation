@@ -3,8 +3,15 @@
 ## 1. Scope and ownership
 
 - TS schema source of truth: `packages/db/src/schema/**`
-- SQL migration source of truth: `supabase/migrations/**`
-- Seed source of truth: `supabase/seed.sql`
+- SQL migration source of truth: `database/migrations/**`
+- Seed source of truth: `database/seed.sql`
+
+前提:
+
+- Supabase は **Postgres のホスティング先**としてのみ扱う。
+- `supabase-js` は使わない。
+- `supabase` CLI は使わない（`supabase link`, `supabase db push` は不使用）。
+- migration は `drizzle-kit` で生成・適用する。
 
 ## 2. Internal table boundary
 
@@ -22,8 +29,8 @@ Review UI tables (read/write only via `apps/web` server layer):
 
 Rule:
 
-- Supabase client SDK から内部テーブルへ直接アクセスしない
-- 画面・API は必ず `apps/web/src/server/**` の command/query 経由で操作する
+- 内部テーブルへクライアントから直接アクセスしない
+- 画面・API は `apps/web/src/server/**` の command/query 経由で操作する
 
 ## 3. Hand-written migration policy
 
@@ -36,7 +43,7 @@ Hand-written migration is required for:
 
 Naming:
 
-- `supabase/migrations/<4digit>_<summary>.sql`
+- `database/migrations/<4digit>_<summary>.sql`
 - 例: `0001_rls_policies.sql`, `0002_refresh_trigger.sql`
 
 Rules:
@@ -45,7 +52,33 @@ Rules:
 - 手書き migration は Drizzle 生成 SQL の後ろに積む
 - 1 migration = 1責務（review しやすい粒度）
 
-## 4. Migration execution flow
+## 4. Local infra（Docker Compose）
+
+このプロジェクトではローカル DB を Docker Compose で起動する。
+
+```bash
+pnpm infra:up
+```
+
+主なポート（デフォルト）:
+
+- Postgres: `127.0.0.1:55444`
+- MinIO API: `127.0.0.1:59100`
+- MinIO Console: `127.0.0.1:59101`
+
+必要なら環境変数で上書き:
+
+- `POSTGRES_HOST_PORT`
+- `MINIO_API_HOST_PORT`
+- `MINIO_CONSOLE_HOST_PORT`
+
+停止:
+
+```bash
+pnpm infra:down
+```
+
+## 5. Migration execution flow
 
 ### local
 
@@ -56,21 +89,16 @@ Rules:
 pnpm --filter @merchandise/db db:generate
 ```
 
-3. 必要なら hand-written migration を追加
-4. DB 再作成 + seed
+3. migration 適用（`DATABASE_URL` 未指定時は `127.0.0.1:55444` を使用）
 
 ```bash
-supabase db reset
+pnpm db:migrate
 ```
 
-補足:
-
-- Supabase CLI v2.67.1 では reset 後の container restart で `502` が返ることがある
-- その場合でも DB 再作成が完了しているケースがあるため、以下で seed を検証する
+4. seed 適用
 
 ```bash
-psql \"postgresql://postgres:postgres@127.0.0.1:54322/postgres\" -Atc \"select id, sku from targets order by id;\"
-psql \"postgresql://postgres:postgres@127.0.0.1:54322/postgres\" -Atc \"select rolname from pg_roles where rolname in ('msa_ingest','msa_reviewer') order by rolname;\"
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55444/postgres" pnpm db:seed
 ```
 
 5. backend test 実行
@@ -82,24 +110,23 @@ pnpm test
 
 ### staging / production
 
-1. `supabase link --project-ref <PROJECT_REF>`（初回のみ）
-2. migration 適用
+`DATABASE_URL` を対象環境に向けて `drizzle-kit` で直接適用する。
 
 ```bash
-supabase db push
+DATABASE_URL="<staging_or_prod_url>" pnpm db:migrate
 ```
 
-3. deploy 後に health check（`apps/web` API + jobs）
+適用後に health check（`apps/web` API + jobs）を実施する。
 
-## 5. Test migration path
+## 6. Test migration path
 
 `packages/db/src/test.ts` では migration path を上書きできる。
 
-- 既定: `packages/db/database/migrations`
+- 既定: `database/migrations`
 - 上書き: `DATABASE_MIGRATIONS_PATH`
 
 例:
 
 ```bash
-DATABASE_MIGRATIONS_PATH=supabase/migrations pnpm --filter @merchandise/db test
+DATABASE_MIGRATIONS_PATH=database/migrations pnpm --filter @merchandise/db test
 ```

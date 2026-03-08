@@ -11,6 +11,10 @@
     "dev": "turbo run dev",
     "trigger:dev": "turbo run trigger:dev",
     "db:generate": "turbo run db:generate",
+    "db:migrate": "pnpm --filter @merchandise/db db:migrate",
+    "db:seed": "pnpm --filter @merchandise/db db:seed",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
     "contracts:export-openapi": "tsx scripts/export-openapi.ts"
   },
   "devDependencies": {

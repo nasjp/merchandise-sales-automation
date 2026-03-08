@@ -43,7 +43,7 @@ description: "merchandise-sales-automation の DB テスト（PGlite）と各種
 ### DB ライフサイクル
 - テスト DB は必ず `@merchandise/db/test` の `db({ migrations, cache })` を使う
 - デフォルトは `db({ migrations: true, cache: true })` を推奨
-- migration は `supabase/migrations` を正本として適用する
+- migration は `database/migrations` を正本として適用する
 - 必要に応じて `DATABASE_MIGRATIONS_PATH` で migration パスを切り替える
 
 ### 推奨テンプレ

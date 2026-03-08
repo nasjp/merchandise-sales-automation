@@ -1,5 +1,12 @@
 # Operations Guide
 
+## 0. DB 運用原則
+
+- Supabase は managed Postgres の置き場としてのみ使用する
+- `supabase-js` / `supabase` CLI は運用で使用しない
+- DB migration は `drizzle-kit`（`pnpm db:generate` / `pnpm db:migrate`）を使う
+- ローカル DB は `docker compose`（`pnpm infra:up`）で起動する
+
 ## 1. Environment matrix
 
 ### apps/web

@@ -10,7 +10,6 @@ type UnlockPageProps = {
 export default async function UnlockPage({ searchParams }: UnlockPageProps) {
   const params = await searchParams;
   const next = normalizeNextPath(params?.next);
-  const hasError = params?.error === "1";
 
   return (
     <main
@@ -35,15 +34,10 @@ export default async function UnlockPage({ searchParams }: UnlockPageProps) {
           background: "#fff",
         }}
       >
-        <h1 style={{ margin: 0, fontSize: "18px" }}>パスワードを入力</h1>
-        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
-          この環境はアクセス制限されています。
-        </p>
         <input type="hidden" name="next" value={next} />
         <input
           type="password"
           name="password"
-          placeholder="PASSWORD"
           required
           autoFocus
           style={{
@@ -53,11 +47,6 @@ export default async function UnlockPage({ searchParams }: UnlockPageProps) {
             fontSize: "14px",
           }}
         />
-        {hasError ? (
-          <p style={{ margin: 0, color: "#b91c1c", fontSize: "13px" }}>
-            パスワードが正しくありません。
-          </p>
-        ) : null}
         <button
           type="submit"
           style={{
@@ -75,4 +64,3 @@ export default async function UnlockPage({ searchParams }: UnlockPageProps) {
     </main>
   );
 }
-

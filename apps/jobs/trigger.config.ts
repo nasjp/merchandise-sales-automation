@@ -1,4 +1,5 @@
 export default {
-  project: "merchandise-sales-automation-jobs",
+  project: "proj_rctoyullfyotoeyawxru",
+  maxDuration: 300,
   dirs: ["./trigger"],
 };

@@ -142,8 +142,8 @@
 - [x] CI 上でも PGlite で DB テストが再現する
 
 ## 11. デプロイと運用（P1）
-- [ ] Vercel に `apps/web` を接続する
-- [ ] Trigger.dev に `apps/jobs/trigger.config.ts` を接続する
+- [x] Vercel に `apps/web` を接続する
+- [x] Trigger.dev に `apps/jobs/trigger.config.ts` を接続する
 - [ ] Supabase 環境（staging/prod）を分離する
 - [x] 環境変数管理（web/jobs/android）と秘密情報ローテーション手順を定義する
 - [x] 監視項目（失敗率、遅延、候補生成数、承認率）を決める

@@ -6,6 +6,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat("ja-JP", {
   minute: "2-digit",
   second: "2-digit",
   hour12: false,
+  timeZone: "Asia/Tokyo",
 });
 
 const yenFormatter = new Intl.NumberFormat("ja-JP", {

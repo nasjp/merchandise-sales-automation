@@ -242,7 +242,7 @@ export const classifyPricingCandidates = async (params: {
   const minConfidence = Math.max(0, Math.min(1, params.minConfidence ?? 0.6));
   const maxItems = Math.max(1, Math.min(300, params.maxItems ?? 120));
   const batchSize = Math.max(1, Math.min(80, params.batchSize ?? 25));
-  const timeoutMs = Math.max(1_000, Math.min(60_000, params.timeoutMs ?? 12_000));
+  const timeoutMs = Math.max(1_000, Math.min(300_000, params.timeoutMs ?? 300_000));
   const model = params.model ?? "gpt-5.4-2026-03-05";
   const requireLlm = params.requireLlm ?? false;
 

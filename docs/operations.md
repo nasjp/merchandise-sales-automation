@@ -37,7 +37,7 @@
 - `PRICING_MERCARI_MIN_SAMPLE_COUNT`: 実売価格採用に必要な最小サンプル数（既定: 8）
 - `OPENAI_API_KEY`: 実売データ仕訳（vercel/ai）で使用する API key
 - `PRICING_CLASSIFIER_MODEL`: 仕訳モデル名（既定: `gpt-5.4-2026-03-05`）
-- `PRICING_CLASSIFIER_TIMEOUT_MS`: 仕訳 LLM timeout（既定: 12000）
+- `PRICING_CLASSIFIER_TIMEOUT_MS`: 仕訳 LLM timeout（既定: 300000）
 - `PRICING_CLASSIFIER_MIN_CONFIDENCE`: include 最低 confidence（既定: 0.6）
 - `PRICING_CLASSIFIER_BATCH_SIZE`: 仕訳 1バッチ件数（既定: 25）
 - `PRICING_CLASSIFIER_MAX_ITEMS`: 仕訳対象最大件数（既定: 120）

@@ -204,16 +204,48 @@ const toErrorMessage = (error: unknown) =>
 const normalizeText = (value: string) =>
   value.normalize("NFKC").replace(/[_\s-]+/g, " ").trim();
 
-const buildMercariKeyword = (target: Target) => {
-  const tokens = [
-    normalizeText(target.titleKeyword),
-    normalizeText(target.modelKeyword ?? ""),
-    normalizeText(target.sku),
-  ]
-    .flatMap((value) => value.split(" ").filter((token) => token.length > 0))
-    .filter((token, index, all) => all.indexOf(token) === index);
+const tokenizeKeyword = (value: string) =>
+  normalizeText(value)
+    .toLowerCase()
+    .split(" ")
+    .filter((token) => token.length > 0);
 
-  return tokens.join(" ");
+const isNoisyCompactModelToken = (token: string) => {
+  const hasLetters = /[a-z]/i.test(token);
+  const hasDigits = /\d/.test(token);
+  if (!hasLetters || !hasDigits) {
+    return false;
+  }
+
+  if (token.length >= 11) {
+    return true;
+  }
+
+  return /(mmgps|mmcellular|gps|cellular|simfree|gb)$/i.test(token);
+};
+
+const buildModelTokensForKeyword = (modelKeyword: string | null) => {
+  if (!modelKeyword) {
+    return [] as string[];
+  }
+
+  const tokens = tokenizeKeyword(modelKeyword);
+  if (tokens.length === 0) {
+    return tokens;
+  }
+
+  return tokens.filter((token) => !isNoisyCompactModelToken(token));
+};
+
+const buildMercariKeyword = (target: Target) => {
+  const rawTokens = [
+    ...tokenizeKeyword(target.titleKeyword),
+    ...buildModelTokensForKeyword(target.modelKeyword ?? null),
+    ...tokenizeKeyword(target.sku),
+  ];
+
+  const dedupedTokens = Array.from(new Set(rawTokens));
+  return dedupedTokens.join(" ");
 };
 
 const parsePositiveInt = (value: string | undefined) => {

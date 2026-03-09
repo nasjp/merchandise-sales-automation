@@ -14,12 +14,8 @@ const resolveTriggerTaskId = (taskName: string): string | null => {
 };
 
 const resolveTriggerAccessToken = () => {
-  return (
-    process.env.TRIGGER_API_KEY ??
-    process.env.TRIGGER_SECRET_KEY ??
-    process.env.TRIGGER_ACCESS_TOKEN ??
-    null
-  );
+  const secretKey = process.env.TRIGGER_SECRET_KEY?.trim();
+  return secretKey && secretKey.length > 0 ? secretKey : null;
 };
 
 const buildTriggerPayload = (params: {
@@ -87,9 +83,7 @@ export const dispatchTaskRun = async (params: {
 
   const accessToken = resolveTriggerAccessToken();
   if (!accessToken) {
-    throw new Error(
-      "TRIGGER_API_KEY (or TRIGGER_SECRET_KEY / TRIGGER_ACCESS_TOKEN) is not configured",
-    );
+    throw new Error("TRIGGER_SECRET_KEY is not configured");
   }
 
   const triggerPayload = buildTriggerPayload(params);

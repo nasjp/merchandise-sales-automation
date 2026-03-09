@@ -14,14 +14,16 @@
 - `DATABASE_URL`: Supabase Postgres 接続文字列
 - `ANDROID_INGEST_SHARED_SECRET`: Android 署名検証キー
 - `TRIGGER_API_BASE_URL`: Trigger API ベース URL
-- `TRIGGER_API_KEY`: Trigger 実行用キー（project API key）
+- `TRIGGER_SECRET_KEY`: Trigger 実行/Management API 用キー（project-specific Secret API key）
+- `TRIGGER_ACCESS_TOKEN`: Personal Access Token（CLI/一部用途）。通常の run 実行・ログ調査では使わない
 - `PASSWORD`: production UI のパスワード入力画面で使うパスワード
 
 ### apps/jobs
 
 - `DATABASE_URL`: Supabase Postgres 接続文字列
-- `TRIGGER_API_KEY`: Trigger 実行用キー
+- `TRIGGER_SECRET_KEY`: Trigger 実行用キー（SDK が既定で参照）
 - `TRIGGER_API_BASE_URL`: Trigger API ベース URL
+- `TRIGGER_ACCESS_TOKEN`: Personal Access Token（CLI/一部用途）
 - `SLACK_SIGNING_SECRET`: Slack 署名シークレット
 - `SLACK_BOT_TOKEN`: Slack Bot token（通知送信用）
 - `SLACK_CHANNEL_NAME`: Slack 投稿先チャネル名
@@ -50,7 +52,7 @@
 対象:
 
 - `ANDROID_INGEST_SHARED_SECRET`
-- `TRIGGER_API_KEY`
+- `TRIGGER_SECRET_KEY`
 - `PASSWORD`
 - `DATABASE_URL`（必要時）
 
@@ -111,3 +113,4 @@
 - Mercari API は 429/5xx を返すことがあるため、timeout/retry を前提にする
 - 仕訳 LLM が timeout/429 等で失敗した場合はフェイルソフトせず task を失敗させる（不完全データを採用しない）
 - `pricing.refreshDueTargets` は対象数が多い場合、`PRICING_MERCARI_MAX_PAGES` を下げて実行時間を抑える
+- Trigger run のイベント取得は `TRIGGER_SECRET_KEY` を使う（PAT の `TRIGGER_ACCESS_TOKEN` は用途が異なる）

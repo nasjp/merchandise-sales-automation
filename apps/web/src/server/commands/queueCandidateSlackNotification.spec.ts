@@ -1,13 +1,21 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-  CANDIDATE_NOTIFY_SLACK_TASK_NAME,
-  queueCandidateSlackNotification,
-} from "./queueCandidateSlackNotification";
+import { queueCandidateSlackNotification } from "./queueCandidateSlackNotification";
 
-const queueTaskRunAndDispatchMock = vi.hoisted(() => vi.fn());
+const enqueueMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/server/trigger/client", () => ({
-  queueTaskRunAndDispatch: queueTaskRunAndDispatchMock,
+vi.mock("@merchandise/db", () => ({
+  repositoryLocator: {
+    jobQueue: {
+      enqueue: enqueueMock,
+    },
+  },
+  JOB_TYPES: {
+    CANDIDATES_NOTIFY_SLACK: "candidates.notifySlack",
+  },
+}));
+
+vi.mock("@/server/db", () => ({
+  getDb: () => ({}),
 }));
 
 describe("queueCandidateSlackNotification", () => {
@@ -15,9 +23,10 @@ describe("queueCandidateSlackNotification", () => {
     vi.clearAllMocks();
   });
 
-  test("needs_review のとき通知 task をキューして dispatch する", async () => {
-    queueTaskRunAndDispatchMock.mockResolvedValueOnce({
-      runId: "run-notify-1",
+  test("needs_review のとき job_queue に enqueue する", async () => {
+    enqueueMock.mockResolvedValueOnce({
+      id: "job-1",
+      jobType: "candidates.notifySlack",
     });
 
     const result = await queueCandidateSlackNotification({
@@ -29,22 +38,25 @@ describe("queueCandidateSlackNotification", () => {
       reviewState: "needs_review",
     });
 
-    expect(queueTaskRunAndDispatchMock).toHaveBeenCalledWith({
-      taskName: CANDIDATE_NOTIFY_SLACK_TASK_NAME,
-      payload: {
-        candidateId: "cand-1",
-        listingTitle: "PlayStation 5 CFI-2000 本体",
-        listingPriceYen: 49800,
-        score: 78,
-        reason: "match:title,llm:success,snapshot:available",
+    expect(enqueueMock).toHaveBeenCalledWith(
+      expect.anything(),
+      {
+        jobType: "candidates.notifySlack",
+        payload: {
+          candidateId: "cand-1",
+          listingTitle: "PlayStation 5 CFI-2000 本体",
+          listingPriceYen: 49800,
+          score: 78,
+          reason: "match:title,llm:success,snapshot:available",
+        },
       },
-    });
+    );
     expect(result).toMatchObject({
-      runId: "run-notify-1",
+      id: "job-1",
     });
   });
 
-  test("needs_review 以外は通知 task をキューしない", async () => {
+  test("needs_review 以外は enqueue しない", async () => {
     const result = await queueCandidateSlackNotification({
       id: "cand-2",
       listingTitle: "PlayStation 5 CFI-2000 本体",
@@ -55,6 +67,6 @@ describe("queueCandidateSlackNotification", () => {
     });
 
     expect(result).toBeNull();
-    expect(queueTaskRunAndDispatchMock).not.toHaveBeenCalled();
+    expect(enqueueMock).not.toHaveBeenCalled();
   });
 });

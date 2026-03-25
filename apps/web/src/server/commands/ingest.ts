@@ -1,10 +1,9 @@
 import type { AndroidIngestPayload } from "@merchandise/contracts";
-import { repositoryLocator } from "@merchandise/db";
+import { repositoryLocator, JOB_TYPES } from "@merchandise/db";
 import { buildRawEventDedupeKey } from "@/lib/dedupe";
 import { queueCandidateSlackNotification } from "@/server/commands/queueCandidateSlackNotification";
 import { getDb } from "@/server/db";
 import { generateCandidateFromRawEvent } from "@/server/commands/ingestPipeline";
-import { markTaskRunFinished, queueTaskRun } from "@/server/trigger/client";
 
 export const ingestAndroidPayload = async (payload: AndroidIngestPayload) => {
   const db = getDb();
@@ -21,11 +20,9 @@ export const ingestAndroidPayload = async (payload: AndroidIngestPayload) => {
   });
 
   if (!deduped) {
-    const run = await queueTaskRun({
-      taskName: "ingest.processRawEvent",
-      payload: {
-        rawEventId: event.id,
-      },
+    await repositoryLocator.jobQueue.enqueue(db, {
+      jobType: JOB_TYPES.INGEST_PROCESS_RAW_EVENT,
+      payload: { rawEventId: event.id },
     });
 
     try {
@@ -39,17 +36,11 @@ export const ingestAndroidPayload = async (payload: AndroidIngestPayload) => {
           error: message,
         });
       }
-
-      await markTaskRunFinished({
-        runId: run.runId,
-        status: "success",
-      });
     } catch (error) {
-      await markTaskRunFinished({
-        runId: run.runId,
-        status: "failed",
+      console.error("[web] failed to generate candidate", {
+        rawEventId: event.id,
+        error: error instanceof Error ? error.message : String(error),
       });
-      throw error;
     }
   }
 

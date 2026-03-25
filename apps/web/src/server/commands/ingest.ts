@@ -5,13 +5,18 @@ import { queueCandidateSlackNotification } from "@/server/commands/queueCandidat
 import { getDb } from "@/server/db";
 import { generateCandidateFromRawEvent } from "@/server/commands/ingestPipeline";
 
+const resolveSource = (sourcePackage?: string): string => {
+  if (sourcePackage === "jp.co.yahoo.android.yauction") return "yahoo_auction";
+  return "android";
+};
+
 export const ingestAndroidPayload = async (payload: AndroidIngestPayload) => {
   const db = getDb();
   const receivedAt = payload.receivedAt ? new Date(payload.receivedAt) : new Date();
   const dedupeKey = buildRawEventDedupeKey(payload);
 
   const { event, deduped } = await repositoryLocator.rawEvents.insertOrGetByDedupe(db, {
-    source: "android",
+    source: resolveSource(payload.sourcePackage),
     notificationId: payload.notificationId,
     title: payload.title,
     body: payload.body,

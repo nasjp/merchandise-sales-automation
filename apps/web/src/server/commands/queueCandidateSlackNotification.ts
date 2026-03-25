@@ -1,7 +1,5 @@
-import type { Candidate } from "@merchandise/db";
-import { queueTaskRunAndDispatch } from "@/server/trigger/client";
-
-export const CANDIDATE_NOTIFY_SLACK_TASK_NAME = "candidates.notifySlack";
+import { type Candidate, repositoryLocator, JOB_TYPES } from "@merchandise/db";
+import { getDb } from "@/server/db";
 
 export const queueCandidateSlackNotification = async (
   candidate: Pick<
@@ -13,8 +11,9 @@ export const queueCandidateSlackNotification = async (
     return null;
   }
 
-  return await queueTaskRunAndDispatch({
-    taskName: CANDIDATE_NOTIFY_SLACK_TASK_NAME,
+  const db = getDb();
+  return await repositoryLocator.jobQueue.enqueue(db, {
+    jobType: JOB_TYPES.CANDIDATES_NOTIFY_SLACK,
     payload: {
       candidateId: candidate.id,
       listingTitle: candidate.listingTitle,

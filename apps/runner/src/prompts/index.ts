@@ -25,7 +25,8 @@ const promptBuilders: Record<
   [JOB_TYPES.MAINTENANCE_CLEANUP_OLD_ARTIFACTS]: maintenancePrompts.cleanupOldArtifacts,
 };
 
-export const buildSystemPrompt = (_job: JobQueue): string => {
+export const buildSystemPrompt = (job: JobQueue): string => {
+  const jobContext = `現在のジョブ: ${job.jobType}`;
   return [
     "あなたは merchandise-sales-automation プロジェクトのジョブ実行エージェントです。",
     "このプロジェクトのコードを読み、必要な処理を実行してください。",
@@ -38,6 +39,8 @@ export const buildSystemPrompt = (_job: JobQueue): string => {
     '  成功時: ```json\\n{"status":"success", ...}\\n```',
     '  失敗時: ```json\\n{"status":"error", "message":"..."}\\n```',
     "- 不要なファイルを作成しないこと。一時スクリプトが必要な場合は実行後に削除すること",
+    "",
+    jobContext,
   ].join("\n");
 };
 

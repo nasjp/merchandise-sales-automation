@@ -1,7 +1,7 @@
 const json = (payload: Record<string, unknown>) => JSON.stringify(payload, null, 2);
 
 export const pricingPrompts = {
-  refreshDueTargets: (_payload: Record<string, unknown>): string => [
+  refreshDueTargets: (payload: Record<string, unknown>): string => [
     "## タスク: 期限切れターゲットの価格更新",
     "",
     "24時間以上スナップショットが更新されていない target を検出し、各 target の価格スナップショットを再計算してください。",
@@ -15,6 +15,8 @@ export const pricingPrompts = {
     "```json",
     '{"status": "success", "processedCount": N, "targetIds": [...]}',
     "```",
+    "",
+    `ペイロード: ${json(payload)}`,
   ].join("\n"),
 
   recomputeSnapshot: (payload: Record<string, unknown>): string => [

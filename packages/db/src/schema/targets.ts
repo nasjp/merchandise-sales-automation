@@ -10,6 +10,8 @@ export const targets = pgTable(
     sku: text("sku").notNull(),
     titleKeyword: text("title_keyword").notNull(),
     modelKeyword: text("model_keyword"),
+    searchKeywordA: text("search_keyword_a"),
+    searchKeywordB: text("search_keyword_b"),
     isActive: boolean("is_active").notNull().default(true),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),

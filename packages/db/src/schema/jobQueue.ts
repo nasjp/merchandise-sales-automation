@@ -53,6 +53,7 @@ export const JOB_TYPES = {
   AI_EXTRACT_LISTING_ATTRIBUTES: "ai.extractListingAttributes",
   MAINTENANCE_RETRY_STUCK_RUNS: "maintenance.retryStuckRuns",
   MAINTENANCE_CLEANUP_OLD_ARTIFACTS: "maintenance.cleanupOldArtifacts",
+  TARGETS_OPTIMIZE: "targets.optimize",
 } as const;
 
 export type JobType = (typeof JOB_TYPES)[keyof typeof JOB_TYPES];

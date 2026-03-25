@@ -9,7 +9,8 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@merchandise/db": ["../../packages/db/src/index.ts"]
+      "@merchandise/db": ["../../packages/db/src/index.ts"],
+      "@merchandise/mercari": ["../../packages/mercari/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts"],

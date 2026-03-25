@@ -78,6 +78,9 @@ importers:
       '@merchandise/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@merchandise/mercari':
+        specifier: workspace:*
+        version: link:../../packages/mercari
     devDependencies:
       '@types/node':
         specifier: ^22.13.10

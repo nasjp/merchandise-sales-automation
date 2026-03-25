@@ -1,0 +1,58 @@
+const json = (payload: Record<string, unknown>) => JSON.stringify(payload, null, 2);
+
+export const pricingPrompts = {
+  refreshDueTargets: (_payload: Record<string, unknown>): string => [
+    "## タスク: 期限切れターゲットの価格更新",
+    "",
+    "24時間以上スナップショットが更新されていない target を検出し、各 target の価格スナップショットを再計算してください。",
+    "",
+    "### 手順:",
+    "1. apps/jobs/src/services/pricing.ts を読んで findDueTargetIds と recomputeSnapshotForTarget の使い方を理解する",
+    "2. これらの関数を呼び出すスクリプトを npx tsx -e で実行する",
+    "3. 処理した target の数と結果を JSON で報告する",
+    "",
+    "### 結果フォーマット:",
+    "```json",
+    '{"status": "success", "processedCount": N, "targetIds": [...]}',
+    "```",
+  ].join("\n"),
+
+  recomputeSnapshot: (payload: Record<string, unknown>): string => [
+    "## タスク: 価格スナップショット再計算",
+    "",
+    `targetId: ${payload.targetId} の価格スナップショットを再計算してください。`,
+    "",
+    "### 手順:",
+    "1. apps/jobs/src/services/pricing.ts の recomputeSnapshotForTarget() を確認する",
+    "2. この関数を呼び出すスクリプトを npx tsx -e で実行する",
+    "3. 結果を JSON で報告する",
+    "",
+    `ペイロード: ${json(payload)}`,
+  ].join("\n"),
+
+  probeMercari: (payload: Record<string, unknown>): string => [
+    "## タスク: メルカリ実売データ探索",
+    "",
+    "メルカリの検索APIを使って実売データを取得してください。",
+    "",
+    "### 手順:",
+    "1. apps/jobs/trigger/pricing/probeMercari.ts を確認する",
+    "2. packages/mercari の API クライアントを使ってデータを取得する",
+    "3. 結果を JSON で報告する",
+    "",
+    `ペイロード: ${json(payload)}`,
+  ].join("\n"),
+
+  backfillSnapshots: (payload: Record<string, unknown>): string => [
+    "## タスク: 過去スナップショットのバックフィル",
+    "",
+    `${payload.days ?? 7} 日分のスナップショットを過去遡及で生成してください。`,
+    "",
+    "### 手順:",
+    "1. apps/jobs/trigger/pricing/backfillSnapshots.ts を確認する",
+    "2. 同等のロジックを実行する",
+    "3. 結果を JSON で報告する",
+    "",
+    `ペイロード: ${json(payload)}`,
+  ].join("\n"),
+};

@@ -15,7 +15,7 @@ export const executeWithClaude = async (
     prompt,
     options: {
       systemPrompt,
-      maxTurns: 15,
+      maxTurns: 30,
       allowedTools: ["Bash", "Read", "Grep", "Glob"],
       cwd: config.projectRoot,
       permissionMode: "bypassPermissions",

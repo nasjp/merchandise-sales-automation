@@ -11,7 +11,7 @@ import java.time.Instant
 class MercariNotificationListenerService : NotificationListenerService() {
   override fun onNotificationPosted(sbn: StatusBarNotification?) {
     val target = sbn ?: return
-    if (target.packageName != MERCARI_PACKAGE_NAME) {
+    if (target.packageName !in ALLOWED_PACKAGES) {
       return
     }
 
@@ -82,6 +82,9 @@ class MercariNotificationListenerService : NotificationListenerService() {
   }
 
   companion object {
-    private const val MERCARI_PACKAGE_NAME = "com.mercari"
+    private val ALLOWED_PACKAGES = setOf(
+      "com.mercari",
+      "jp.co.yahoo.android.yauction",
+    )
   }
 }

@@ -13,3 +13,4 @@ apps/android/local.properties
 apps/jobs/.trigger/
 apps/web/.next/
 apps/web/tsconfig.tsbuildinfo
+logs/

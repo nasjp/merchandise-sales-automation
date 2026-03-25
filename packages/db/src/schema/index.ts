@@ -1,5 +1,6 @@
 export * from "./aiRuns";
 export * from "./candidates";
+export * from "./jobQueue";
 export * from "./priceSnapshots";
 export * from "./rawEvents";
 export * from "./targets";

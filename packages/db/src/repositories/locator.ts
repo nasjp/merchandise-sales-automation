@@ -1,5 +1,6 @@
 import { aiRunsRepo } from "./aiRunsRepo";
 import { candidatesRepo } from "./candidatesRepo";
+import { jobQueueRepo } from "./jobQueueRepo";
 import { rawEventsRepo } from "./rawEventsRepo";
 import { snapshotsRepo } from "./snapshotsRepo";
 import { targetsRepo } from "./targetsRepo";
@@ -12,4 +13,5 @@ export const repositoryLocator = {
   candidates: candidatesRepo,
   aiRuns: aiRunsRepo,
   taskAudit: taskAuditRepo,
+  jobQueue: jobQueueRepo,
 };

@@ -1,21 +1,3 @@
-import { retryStuckRuns } from "../maintenance/retryStuckRuns";
-import { cleanupOldArtifacts } from "../maintenance/cleanupOldArtifacts";
-import { refreshDueTargets } from "../pricing/refreshDueTargets";
-
-export const scheduledRefreshDueTargets = async () => {
-  return await refreshDueTargets();
-};
-
-export const scheduledRetryStuckRuns = async () => {
-  return await retryStuckRuns();
-};
-
-export const scheduledCleanupOldArtifacts = async () => {
-  return await cleanupOldArtifacts({
-    days: 30,
-  });
-};
-
 export const jobSchedules = [
   {
     id: "pricing.refreshDueTargets.daily",

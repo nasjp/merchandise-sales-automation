@@ -5,6 +5,7 @@ import { candidatesPrompts } from "./candidates";
 import { aiPrompts } from "./ai";
 import { ingestPrompts } from "./ingest";
 import { maintenancePrompts } from "./maintenance";
+import { targetsPrompts } from "./targets";
 
 const promptBuilders: Record<
   JobType,
@@ -23,6 +24,7 @@ const promptBuilders: Record<
   [JOB_TYPES.INGEST_REPROCESS_RAW_EVENT]: ingestPrompts.reprocessRawEvent,
   [JOB_TYPES.MAINTENANCE_RETRY_STUCK_RUNS]: maintenancePrompts.retryStuckRuns,
   [JOB_TYPES.MAINTENANCE_CLEANUP_OLD_ARTIFACTS]: maintenancePrompts.cleanupOldArtifacts,
+  [JOB_TYPES.TARGETS_OPTIMIZE]: targetsPrompts.optimize,
 };
 
 export const buildSystemPrompt = (job: JobQueue): string => {
